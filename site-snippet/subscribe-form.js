@@ -1,0 +1,69 @@
+/*
+  Pega esta función en app.js y agrega initSubscribeForm(); a la lista de
+  funciones que se llaman en el listener de DOMContentLoaded, junto a las
+  demás (initThemeToggle, initMobileMenu, etc.)
+
+  Reemplaza WORKER_URL por la URL real de tu Worker desplegado.
+*/
+
+const WORKER_URL = "https://YOUR_WORKER_URL"; // p. ej. https://specsolid-newsletter.tu-cuenta.workers.dev
+
+function initSubscribeForm() {
+  const form = document.getElementById('subscribe-form');
+  if (!form) return;
+
+  const statusEl = document.getElementById('subscribe-status');
+  const submitBtn = document.getElementById('subscribe-submit');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const name = document.getElementById('sub-name').value.trim();
+    const email = document.getElementById('sub-email').value.trim();
+    const chapter = document.getElementById('sub-chapter').value;
+    const website = document.getElementById('sub-website').value; // honeypot
+
+    const turnstileToken = form.querySelector('[name="cf-turnstile-response"]')?.value;
+
+    if (!email) {
+      statusEl.textContent = 'Escribe tu correo, por favor.';
+      statusEl.className = 'subscribe-status is-error';
+      return;
+    }
+
+    if (!turnstileToken) {
+      statusEl.textContent = 'Completa la verificación anti-spam.';
+      statusEl.className = 'subscribe-status is-error';
+      return;
+    }
+
+    submitBtn.disabled = true;
+    statusEl.textContent = 'Enviando…';
+    statusEl.className = 'subscribe-status';
+
+    try {
+      const res = await fetch(`${WORKER_URL}/subscribe`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, chapter, turnstileToken, website }),
+      });
+      const data = await res.json();
+
+      if (!res.ok || !data.ok) {
+        throw new Error(data.error || 'Error desconocido');
+      }
+
+      statusEl.textContent = data.alreadySubscribed
+        ? 'Ya estabas suscrito — revisa tu correo, ahí tienes el capítulo.'
+        : '¡Listo! Revisa tu correo en un par de minutos.';
+      statusEl.className = 'subscribe-status is-success';
+      form.reset();
+      if (window.turnstile) window.turnstile.reset();
+    } catch (err) {
+      statusEl.textContent = 'No se pudo enviar. Intenta de nuevo en unos minutos.';
+      statusEl.className = 'subscribe-status is-error';
+    } finally {
+      submitBtn.disabled = false;
+    }
+  });
+}

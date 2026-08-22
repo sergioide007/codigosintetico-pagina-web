@@ -1,0 +1,32 @@
+name = "specsolid-newsletter"
+main = "worker/src/index.js"
+compatibility_date = "2026-08-01"
+
+# ---------------------------------------------------------------------------
+# Variables NO secretas (pueden ir en este archivo y en git sin problema).
+# El ALLOWED_ORIGIN debe ser exactamente el dominio desde el que se hace
+# fetch() al Worker, sin barra final. Si usas dos dominios (con y sin www,
+# o codigosintetico-specsolid.com + specsolid.com), separa por coma.
+# ---------------------------------------------------------------------------
+[vars]
+ALLOWED_ORIGIN = "https://codigosintetico-specsolid.com"
+SENDER_NAME = "Sergio Perez Ruiz"
+SENDER_EMAIL = "sergio@specsolid.com"
+
+# ---------------------------------------------------------------------------
+# Base de datos D1 (gratis, hasta 5 GB). El database_id lo obtienes al correr:
+#   wrangler d1 create specsolid-newsletter-db
+# y lo pegas aquí — reemplaza el valor de ejemplo.
+# ---------------------------------------------------------------------------
+[[d1_databases]]
+binding = "DB"
+database_name = "specsolid-newsletter-db"
+database_id = "7e879a49-f3cb-48bd-a444-6bec443edeac"
+
+# ---------------------------------------------------------------------------
+# Cron Trigger: se activa en la Iteración 2 (secuencia de seguimiento).
+# Lo dejamos comentado para que el Worker de esta iteración no dispare nada
+# todavía. Descomenta cuando lleguemos a esa parte.
+# ---------------------------------------------------------------------------
+# [triggers]
+# crons = ["0 15 * * *"]  # todos los días a las 15:00 UTC

@@ -1,0 +1,50 @@
+<!--
+  Pega esta sección en index.html — recomendado justo antes de la sección
+  de Comentarios (id="comentarios"), o donde prefieras. También agrega
+  el script de Turnstile en el <head> o antes de </body>:
+
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
+  Reemplaza:
+    - YOUR_TURNSTILE_SITE_KEY   → la site key pública de tu widget de Turnstile
+    - YOUR_WORKER_URL           → la URL del Worker ya desplegado, ej:
+                                   https://specsolid-newsletter.tu-cuenta.workers.dev
+                                   (o el dominio propio si le pones uno)
+-->
+<section class="subscribe-section" id="suscripcion" aria-labelledby="subscribe-title">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title" id="subscribe-title">Descarga un Capítulo Gratis</h2>
+      <p class="section-subtitle">Elige el capítulo que quieres leer primero. Te llega directo a tu correo, sin costo.</p>
+    </div>
+
+    <form id="subscribe-form" class="subscribe-form" novalidate>
+      <div class="subscribe-row">
+        <input type="text" name="name" id="sub-name" placeholder="Tu nombre" autocomplete="name">
+        <input type="email" name="email" id="sub-email" placeholder="Tu correo" autocomplete="email" required>
+      </div>
+
+      <div class="subscribe-row">
+        <select name="chapter" id="sub-chapter">
+          <option value="cap1">Capítulo 1 — Introducción a los sistemas multiagente</option>
+          <option value="cap2">Capítulo 2 — Presupuesto y economía de tokens</option>
+          <option value="cap3">Capítulo 3 — Resiliencia y circuit breakers</option>
+        </select>
+      </div>
+
+      <!-- Honeypot: campo oculto para bots. Un humano nunca lo llena. -->
+      <div class="subscribe-honeypot" aria-hidden="true">
+        <label for="sub-website">No llenar este campo</label>
+        <input type="text" name="website" id="sub-website" tabindex="-1" autocomplete="off">
+      </div>
+
+      <div class="cf-turnstile" data-sitekey="0x4AAAAAAERXtaGS4GUK5bdr" data-theme="dark"></div>
+
+      <button type="submit" class="btn-primary subscribe-submit" id="subscribe-submit">
+        Enviarme el capítulo
+      </button>
+
+      <p class="subscribe-status" id="subscribe-status" role="status" aria-live="polite"></p>
+    </form>
+  </div>
+</section>

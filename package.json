@@ -1,0 +1,16 @@
+{
+  "name": "specsolid-newsletter",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Worker de Cloudflare para la suscripción y entrega de capítulos de Código Sintético.",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "db:schema:local": "wrangler d1 execute specsolid-newsletter-db --local --file=worker/schema.sql",
+    "db:schema:remote": "wrangler d1 execute specsolid-newsletter-db --remote --file=worker/schema.sql",
+    "tail": "wrangler tail"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}
