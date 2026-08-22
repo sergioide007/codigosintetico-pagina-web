@@ -6,10 +6,10 @@ compatibility_date = "2026-08-01"
 # Variables NO secretas (pueden ir en este archivo y en git sin problema).
 # El ALLOWED_ORIGIN debe ser exactamente el dominio desde el que se hace
 # fetch() al Worker, sin barra final. Si usas dos dominios (con y sin www,
-# o codigosintetico-specsolid.com + specsolid.com), separa por coma.
+# o codigosintetico.specsolid.com + specsolid.com), separa por coma.
 # ---------------------------------------------------------------------------
 [vars]
-ALLOWED_ORIGIN = "https://codigosintetico-specsolid.com"
+ALLOWED_ORIGIN = "https://codigosintetico.specsolid.com"
 SENDER_NAME = "Sergio Perez Ruiz"
 SENDER_EMAIL = "sergio@specsolid.com"
 

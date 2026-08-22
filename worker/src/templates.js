@@ -87,7 +87,7 @@ function chapterEmailHtml({ name, chapterKey, downloadUrl }) {
             <td style="padding:20px 32px; border-top:1px solid #2a2a35; text-align:center;">
               <p style="margin:0 0 6px; font-size:13px; color:#8a8a96;">Sergio Perez Ruiz — SpecSolid Press</p>
               <p style="margin:0; font-size:12px; color:#65656f;">
-                Recibiste este correo porque te suscribiste en codigosintetico-specsolid.com.
+                Recibiste este correo porque te suscribiste en codigosintetico.specsolid.com.
                 <a href="{{unsubscribeUrl}}" style="color:#8a8a96;">Darme de baja</a>
               </p>
             </td>
