@@ -55,12 +55,6 @@ function initSubscribeForm() {
       return;
     }
 
-    if (WORKER_URL.includes('specsolid-newsletter.sergioide007.workers.dev')) {
-      statusEl.textContent = 'El formulario aún no está conectado al Worker (ver app.js).';
-      statusEl.className = 'subscribe-status is-error';
-      return;
-    }
-
     submitBtn.disabled = true;
     statusEl.textContent = 'Enviando…';
     statusEl.className = 'subscribe-status';
