@@ -7,31 +7,7 @@ por correo y la entrega de capítulos en PDF.
 
 ## Arquitectura
 
-```
-┌─────────────────┐       1. POST /subscribe        ┌──────────────────────┐
-│  index.html      │  ───────────────────────────►   │  Cloudflare Worker    │
-│  (sitio estático,│   { name, email, chapter,       │  worker/src/index.js  │
-│   GitHub Pages)  │     turnstileToken }             │                        │
-└─────────────────┘                                  │  2. Verifica Turnstile │
-                                                       │  3. Guarda/actualiza   │
-                                                       │     en D1 (subscribers)│
-                                                       │  4. Genera enlace de   │
-                                                       │     descarga firmado   │
-                                                       │     (HMAC + exp 7 días)│
-                                                       │  5. Envía email        │
-                                                       │     (Brevo API)        │
-                                                       └───────────┬────────────┘
-                                                                   │
-                                                     email con enlace firmado
-                                                                   │
-                                                                   ▼
-┌─────────────────┐     6. GET /download?...        ┌──────────────────────┐
-│  Bandeja de      │  ───────────────────────────►   │  Worker: handleDownload│
-│  entrada del     │                                  │  - valida firma HMAC   │
-│  suscriptor      │  ◄───────────────────────────   │  - valida expiración   │
-└─────────────────┘      PDF (application/pdf)        │  - lee de R2 (privado) │
-                                                       └──────────────────────┘
-```
+![Arquitectura del sistema](architecture.jpeg)
 
 El PDF **nunca** se sirve desde una URL pública fija. El bucket R2 se queda
 privado; el único lector es el propio Worker, a través de un *binding*
