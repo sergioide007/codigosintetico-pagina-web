@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Código Sintético — El arte de orquestar agentes de IA</title>
+<meta name="description" content="Un ensayo técnico sobre la era del código generado por IA: por qué el software sin especificación se degrada, y el framework Spec-Driven Development (SDD) para dirigir sistemas multiagente en producción. Descarga un capítulo gratis.">
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+<meta name="author" content="Sergio Ide · SpecSolid Press">
+<meta name="theme-color" content="#0d0d12">
+<link rel="canonical" href="https://codigosintetico.specsolid.com/">
+<!-- Open Graph -->
+<meta property="og:type" content="book">
+<meta property="og:site_name" content="Código Sintético">
+<meta property="og:title" content="Código Sintético — El arte de orquestar agentes de IA">
+<meta property="og:description" content="Un ensayo técnico sobre la era del código generado por IA y el framework Spec-Driven Development (SDD) para dirigir sistemas multiagente en producción.">
+<meta property="og:url" content="https://codigosintetico.specsolid.com/">
+<meta property="og:locale" content="es_ES">
+<meta property="og:image" content="https://codigosintetico.specsolid.com/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Código Sintético — El arte de orquestar agentes de IA">
+<meta name="twitter:description" content="Un ensayo técnico sobre la era del código generado por IA y el framework SDD para sistemas multiagente en producción.">
+<meta name="twitter:image" content="https://codigosintetico.specsolid.com/og-image.jpg">
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<!-- JSON-LD -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Book",
+  "name": "Código Sintético: El arte de orquestar agentes de IA",
+  "author": { "@type": "Person", "name": "Sergio Ide" },
+  "publisher": { "@type": "Organization", "name": "SpecSolid Press" },
+  "inLanguage": "es",
+  "url": "https://codigosintetico.specsolid.com/",
+  "genre": "Ensayo técnico"
+}
+</script>
+</head>
+<body>
+
+<header>
+  <div class="nav-inner">
+    <a href="#top" class="brand"><span class="mark">CS</span><span class="bt">Código Sintético</span></a>
+    <nav class="nav-links">
+      <a href="#libro" class="nav-link">El libro</a>
+      <a href="#capitulos" class="nav-link">Capítulos</a>
+      <a href="#suscripcion" class="nav-link">Descargar capítulo</a>
+      <a href="#autor" class="nav-link">Autor</a>
+    </nav>
+    <div class="nav-cta">
+      <a href="https://www.specsolid.com/" class="btn btn-outline btn-sm">SpecSolid ↗</a>
+      <a href="#suscripcion" class="btn btn-gold btn-sm">Descargar capítulo</a>
+    </div>
+    <button class="hamburger" onclick="toggleMenu()" aria-label="Menú">☰</button>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#libro" class="mobile-link" onclick="toggleMenu()">El libro</a>
+    <a href="#capitulos" class="mobile-link" onclick="toggleMenu()">Capítulos</a>
+    <a href="#suscripcion" class="mobile-link" onclick="toggleMenu()">Descargar capítulo</a>
+    <a href="#autor" class="mobile-link" onclick="toggleMenu()">Autor</a>
+    <a href="https://www.specsolid.com/" class="mobile-link" onclick="toggleMenu()">SpecSolid ↗</a>
+    <a href="https://github.com/sergioide007/synthetic-code" target="_blank" class="mobile-link">Repo del código →</a>
+  </div>
+</header>
+
+<!-- ── HERO ── -->
+<section class="hero" id="top">
+  <div class="container hero-grid">
+    <div>
+      <div class="eyebrow reveal">SpecSolid Press · Ensayo técnico · 2026</div>
+      <h1 class="hero-title reveal reveal-1">Código Sintético<em>El arte de orquestar agentes de IA</em></h1>
+      <p class="hero-desc reveal reveal-2">
+        Un ensayo técnico sobre la era del código generado por IA: por qué el software sin
+        especificación se degrada, cómo leer la intención detrás de cada línea sintética, y el
+        framework Spec-Driven Development (SDD) que separa a quienes dirigen la IA de quienes
+        simplemente la siguen.
+      </p>
+      <div class="hero-pills reveal reveal-3">
+        <span class="pill">Spec-Driven Development</span>
+        <span class="pill">Sistemas multiagente</span>
+        <span class="pill">Arquitectura de software</span>
+        <span class="pill">Ingeniería de IA</span>
+      </div>
+      <div class="hero-ctas reveal reveal-4">
+        <a href="#suscripcion" class="btn btn-gold">Descargar un capítulo gratis →</a>
+        <a href="https://github.com/sergioide007/synthetic-code" target="_blank" class="btn btn-outline">Ver el código en GitHub</a>
+      </div>
+      <div class="hero-stats reveal reveal-4">
+        <div><div class="hero-stat-num">SDD</div><div class="hero-stat-lbl">Framework central</div></div>
+        <div><div class="hero-stat-num">2026</div><div class="hero-stat-lbl">Edición</div></div>
+        <div><div class="hero-stat-num">ES</div><div class="hero-stat-lbl">Idioma original</div></div>
+      </div>
+    </div>
+    <div class="book-wrap reveal reveal-2">
+      <div class="book-cover-glow"></div>
+      <div class="book-cover">
+        <div class="book-cover-inner">
+          <div class="book-cover-eyebrow">SpecSolid Press</div>
+          <div class="book-cover-title">Código<br>Sintético</div>
+          <div class="book-cover-rule"></div>
+          <div class="book-cover-sub">Sergio Ide · Ed. 2026</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SOBRE EL LIBRO ── -->
+<section class="about-section" id="libro">
+  <div class="container">
+    <div class="section-header center reveal">
+      <div class="eyebrow" style="justify-content:center"><span></span></div>
+      <h2 class="section-title">De qué trata</h2>
+      <p class="section-sub">
+        La IA ya escribe la mayoría del código nuevo. Este libro no es sobre si eso está bien o mal —
+        es sobre qué separa un sistema que se sostiene en producción de uno que se degrada silenciosamente
+        cuando nadie está mirando la especificación.
+      </p>
+    </div>
+    <div class="pillars">
+      <div class="pillar reveal reveal-1">
+        <div class="pillar-num">01</div>
+        <h3>Especificación como contrato</h3>
+        <p>Por qué el código generado sin una spec explícita acumula deuda técnica invisible, y cómo escribir specs que un agente de IA pueda ejecutar sin perder intención.</p>
+      </div>
+      <div class="pillar reveal reveal-2">
+        <div class="pillar-num">02</div>
+        <h3>Orquestación multiagente</h3>
+        <p>Patrones para coordinar varios agentes de IA trabajando sobre el mismo sistema sin que se pisen entre sí ni degraden la arquitectura.</p>
+      </div>
+      <div class="pillar reveal reveal-3">
+        <div class="pillar-num">03</div>
+        <h3>Costo y resiliencia</h3>
+        <p>Cómo presupuestar el gasto en tokens de un pipeline de agentes, y qué patrones de resiliencia evitan que un fallo en cascada tumbe todo el sistema.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CAPÍTULOS ── -->
+<section id="capitulos">
+  <div class="container">
+    <div class="section-header center reveal">
+      <h2 class="section-title">Capítulos disponibles</h2>
+      <p class="section-sub">Tres capítulos ya están listos para descarga gratuita. El resto del libro se anuncia a los suscriptores primero.</p>
+    </div>
+    <div class="chapters-terminal reveal reveal-1">
+      <div class="term-bar">
+        <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+        <span class="term-path">codigo-sintetico/ — capítulos</span>
+      </div>
+      <div class="term-body">
+        <div class="chapter-row">
+          <div class="chapter-num">01</div>
+          <div class="chapter-body">
+            <div class="chapter-cmd"><span class="prompt">$</span> cat capitulo-1.md</div>
+            <div class="chapter-title">Introducción a los sistemas multiagente</div>
+            <div class="chapter-desc">Qué es un sistema multiagente en la práctica, por qué está apareciendo en pipelines reales de ingeniería, y el vocabulario base que usa el resto del libro.</div>
+          </div>
+          <div class="chapter-status">Disponible</div>
+        </div>
+        <div class="chapter-row">
+          <div class="chapter-num">02</div>
+          <div class="chapter-body">
+            <div class="chapter-cmd"><span class="prompt">$</span> cat capitulo-2.md</div>
+            <div class="chapter-title">Presupuesto y economía de tokens</div>
+            <div class="chapter-desc">Cómo modelar el costo real de un pipeline de agentes y evitar que una automatización bien intencionada termine con una factura fuera de control.</div>
+          </div>
+          <div class="chapter-status">Disponible</div>
+        </div>
+        <div class="chapter-row">
+          <div class="chapter-num">03</div>
+          <div class="chapter-body">
+            <div class="chapter-cmd"><span class="prompt">$</span> cat capitulo-3.md</div>
+            <div class="chapter-title">Resiliencia y circuit breakers</div>
+            <div class="chapter-desc">Patrones para que un sistema multiagente falle de forma controlada en vez de arrastrar todo el pipeline cuando un agente se comporta mal.</div>
+          </div>
+          <div class="chapter-status">Disponible</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SUSCRIPCIÓN (site-snippet/subscribe-form) ── -->
+<section class="subscribe-section" id="suscripcion" aria-labelledby="subscribe-title">
+  <div class="container">
+    <div class="section-header center reveal">
+      <h2 class="section-title" id="subscribe-title">Descarga un capítulo gratis</h2>
+      <p class="section-sub">Elige el capítulo que quieres leer primero. Te llega directo a tu correo, sin costo.</p>
+    </div>
+
+    <form id="subscribe-form" class="subscribe-form reveal reveal-1" novalidate>
+      <div class="subscribe-row">
+        <input type="text" name="name" id="sub-name" placeholder="Tu nombre" autocomplete="name">
+        <input type="email" name="email" id="sub-email" placeholder="Tu correo" autocomplete="email" required>
+      </div>
+
+      <div class="subscribe-row">
+        <select name="chapter" id="sub-chapter">
+          <option value="cap1">Capítulo 1 — Introducción a los sistemas multiagente</option>
+          <option value="cap2">Capítulo 2 — Presupuesto y economía de tokens</option>
+          <option value="cap3">Capítulo 3 — Resiliencia y circuit breakers</option>
+        </select>
+      </div>
+
+      <!-- Honeypot: campo oculto para bots. Un humano nunca lo llena. -->
+      <div class="subscribe-honeypot" aria-hidden="true">
+        <label for="sub-website">No llenar este campo</label>
+        <input type="text" name="website" id="sub-website" tabindex="-1" autocomplete="off">
+      </div>
+
+      <div class="cf-turnstile" data-sitekey="0x4AAAAAAERXtaGS4GUK5bdr" data-theme="dark"></div>
+
+      <button type="submit" class="btn btn-gold subscribe-submit" id="subscribe-submit">
+        Enviarme el capítulo
+      </button>
+
+      <p class="subscribe-status" id="subscribe-status" role="status" aria-live="polite"></p>
+    </form>
+    <p class="subscribe-note">Sin spam. Puedes darte de baja con un clic desde cualquier correo que te enviemos.</p>
+  </div>
+</section>
+
+<!-- ── AUTOR ── -->
+<section class="author-section" id="autor">
+  <div class="container">
+    <div class="author-card reveal">
+      <div class="author-avatar">SI</div>
+      <div>
+        <div class="author-name">Sergio Ide</div>
+        <div class="author-role">SpecSolid Press</div>
+        <p class="author-bio">
+          Autor de Código Sintético e impulsor de SpecSolid, un laboratorio de investigación
+          en Spec-Driven Development y arquitectura de software para sistemas de IA en producción.
+        </p>
+        <div class="author-links">
+          <a href="https://github.com/sergioide007" target="_blank">github.com/sergioide007</a>
+          <a href="https://github.com/sergioide007/synthetic-code" target="_blank">Repo del código →</a>
+          <a href="https://www.specsolid.com/" target="_blank">specsolid.com ↗</a>
+          <a href="mailto:sergio@specsolid.com">sergio@specsolid.com</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="footer-row">
+      <div class="footer-brand">Código Sintético · SpecSolid Press · © 2026</div>
+      <div class="footer-links">
+        <a href="https://www.specsolid.com/">SpecSolid</a>
+        <a href="https://github.com/sergioide007/synthetic-code" target="_blank">Repositorio</a>
+        <a href="https://github.com/sergioide007" target="_blank">GitHub</a>
+        <a href="mailto:sergio@specsolid.com">Contacto</a>
+      </div>
+    </div>
+    <p class="footer-legal">
+      Código Sintético es una publicación independiente de SpecSolid Press. Los capítulos gratuitos
+      se entregan por correo mediante un enlace de descarga firmado, válido por 7 días. Puedes darte
+      de baja en cualquier momento desde el enlace incluido en cada correo.
+    </p>
+  </div>
+</footer>
+
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+<script src="app.js"></script>
+</body>
+</html>
