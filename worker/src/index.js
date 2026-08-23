@@ -49,6 +49,65 @@ async function hmacHex(secret, message) {
   return [...new Uint8Array(sig)].map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
+// El bucket R2 es privado (sin acceso público) — el PDF nunca se expone en
+// una URL suelta. En su lugar, el Worker genera un enlace propio
+// (/download?...) firmado con HMAC y con una fecha de expiración embebida.
+// Solo alguien con la firma correcta (generada aquí, tras pasar Turnstile)
+// puede descargar, y el enlace deja de servir pasado ese tiempo.
+const CHAPTER_OBJECT_KEYS = {
+  cap1: "capitulo-1.pdf",
+  cap2: "capitulo-2.pdf",
+  cap3: "capitulo-3.pdf",
+};
+
+const DOWNLOAD_TTL_SECONDS = 7 * 24 * 60 * 60; // 7 días, como promete el email
+
+async function buildDownloadUrl(request, env, chapterKey, email) {
+  const exp = Math.floor(Date.now() / 1000) + DOWNLOAD_TTL_SECONDS;
+  const sig = await hmacHex(env.DOWNLOAD_SECRET, `${chapterKey}:${email}:${exp}`);
+  const params = new URLSearchParams({ chapter: chapterKey, email, exp: String(exp), sig });
+  return `${new URL(request.url).origin}/download?${params.toString()}`;
+}
+
+async function handleDownload(request, env) {
+  const url = new URL(request.url);
+  const chapterKey = url.searchParams.get("chapter") || "";
+  const email = url.searchParams.get("email") || "";
+  const expStr = url.searchParams.get("exp") || "";
+  const sig = url.searchParams.get("sig") || "";
+
+  const objectKey = CHAPTER_OBJECT_KEYS[chapterKey];
+  if (!objectKey || !email || !expStr || !sig) {
+    return new Response("Enlace inválido.", { status: 400 });
+  }
+
+  const exp = parseInt(expStr, 10);
+  if (!Number.isFinite(exp) || Date.now() / 1000 > exp) {
+    return new Response(
+      "Este enlace de descarga expiró (los enlaces duran 7 días). Vuelve a suscribirte para recibir uno nuevo.",
+      { status: 410, headers: { "Content-Type": "text/plain; charset=utf-8" } }
+    );
+  }
+
+  const expected = await hmacHex(env.DOWNLOAD_SECRET, `${chapterKey}:${email}:${exp}`);
+  if (expected !== sig) {
+    return new Response("Enlace inválido o alterado.", { status: 403 });
+  }
+
+  const object = await env.CHAPTERS_BUCKET.get(objectKey);
+  if (!object) {
+    return new Response("El archivo no está disponible por ahora. Contacta a soporte.", { status: 404 });
+  }
+
+  return new Response(object.body, {
+    headers: {
+      "Content-Type": "application/pdf",
+      "Content-Disposition": `attachment; filename="${objectKey}"`,
+      "Cache-Control": "private, no-store",
+    },
+  });
+}
+
 async function sendBrevoEmail(env, { toEmail, toName, subject, html }) {
   const res = await fetch("https://api.brevo.com/v3/smtp/email", {
     method: "POST",
@@ -127,10 +186,10 @@ async function handleSubscribe(request, env) {
       .run();
   }
 
-  // Enlace de descarga: apunta a un recurso privado con expiración propia
-  // (ver README, sección "Entrega del PDF"). Por ahora usamos la URL fija
-  // configurada en el Worker; en la Iteración 2 se firma con expiración real.
-  const downloadUrl = env[`DOWNLOAD_URL_${chapterKey.toUpperCase()}`] || env.DOWNLOAD_URL_CAP1;
+  // Enlace de descarga: apunta al propio Worker (/download), firmado con
+  // HMAC y con expiración de 7 días embebida — el PDF real vive en un
+  // bucket R2 privado, nunca se expone directamente.
+  const downloadUrl = await buildDownloadUrl(request, env, chapterKey, email);
 
   const unsubSig = await hmacHex(env.UNSUB_SECRET, email);
   const unsubscribeUrl = `${new URL(request.url).origin}/unsubscribe?email=${encodeURIComponent(email)}&sig=${unsubSig}`;
@@ -197,6 +256,10 @@ export default {
 
     if (url.pathname === "/subscribe" && request.method === "POST") {
       return handleSubscribe(request, env);
+    }
+
+    if (url.pathname === "/download" && request.method === "GET") {
+      return handleDownload(request, env);
     }
 
     if (url.pathname === "/unsubscribe" && request.method === "GET") {
