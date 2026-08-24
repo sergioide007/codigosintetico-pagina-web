@@ -11,7 +11,9 @@ CREATE TABLE IF NOT EXISTS subscribers (
   status            TEXT NOT NULL DEFAULT 'active',   -- active | unsubscribed
   source            TEXT NOT NULL DEFAULT 'website',
   created_at        TEXT NOT NULL DEFAULT (datetime('now')),
-  last_sent_at      TEXT
+  last_sent_at      TEXT,
+  day3_sent_at      TEXT,   -- Iteración 2: secuencia de seguimiento
+  day7_sent_at      TEXT
 );
 
 CREATE INDEX IF NOT EXISTS idx_subscribers_status ON subscribers (status);
