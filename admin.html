@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Código Sintético — Panel</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  body{padding:40px 20px}
+  .admin-wrap{max-width:760px;margin:0 auto}
+  .admin-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;flex-wrap:wrap;gap:12px}
+  .key-row{display:flex;gap:10px;margin-bottom:32px;flex-wrap:wrap}
+  .key-row input{
+    flex:1;min-width:220px;padding:.8rem 1rem;border-radius:8px;border:1px solid var(--border-glass);
+    background:var(--bg-tertiary);color:var(--text-primary);font-family:var(--mono);font-size:.9rem;
+  }
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:32px}
+  .stat-card{background:var(--bg-tertiary);border:1px solid var(--border-glass);border-radius:var(--radius-lg);padding:20px}
+  .stat-num{font-family:var(--mono);font-size:28px;font-weight:600;color:var(--accent-orange)}
+  .stat-lbl{font-size:12px;color:var(--text-muted);margin-top:4px}
+  .admin-status{font-size:13px;color:var(--text-muted);margin-bottom:16px;min-height:1.2em}
+  .admin-status.is-error{color:var(--err)}
+  table.simple{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:32px}
+  table.simple th{text-align:left;font-family:var(--mono);font-size:10.5px;text-transform:uppercase;color:var(--text-dim);padding:8px 12px;border-bottom:1px solid var(--border-glass)}
+  table.simple td{padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);color:var(--text-muted)}
+  table.simple td.mono{font-family:var(--mono);color:var(--text-primary)}
+  .hidden{display:none}
+</style>
+</head>
+<body>
+<div class="admin-wrap">
+  <div class="admin-header">
+    <a href="/" class="brand"><span class="mark">CS</span><span class="bt">Código Sintético</span></a>
+    <span style="font-family:var(--mono);font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.08em">Panel de solo lectura</span>
+  </div>
+
+  <div class="key-row">
+    <input type="password" id="admin-key" placeholder="Admin key" autocomplete="off">
+    <button class="btn btn-gold btn-sm" id="admin-load">Cargar</button>
+  </div>
+  <p class="admin-status" id="admin-status"></p>
+
+  <div id="admin-content" class="hidden">
+    <div class="cards">
+      <div class="stat-card"><div class="stat-num" id="stat-active">—</div><div class="stat-lbl">Activos</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-unsub">—</div><div class="stat-lbl">Bajas</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-total">—</div><div class="stat-lbl">Total histórico</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-7d">—</div><div class="stat-lbl">Últimos 7 días</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-30d">—</div><div class="stat-lbl">Últimos 30 días</div></div>
+    </div>
+
+    <h3 style="font-size:14px;margin-bottom:12px">Suscriptores activos por capítulo elegido</h3>
+    <table class="simple" id="table-chapter">
+      <thead><tr><th>Capítulo</th><th>Suscriptores</th></tr></thead>
+      <tbody></tbody>
+    </table>
+
+    <h3 style="font-size:14px;margin-bottom:12px">Altas por día (últimos 14 días)</h3>
+    <table class="simple" id="table-days">
+      <thead><tr><th>Día</th><th>Altas</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script>
+  const CHAPTER_NAMES = {
+    cap1: 'Cap. 1 — El despertar agéntico',
+    cap2: 'Cap. 2 — El AI Engineer',
+    cap3: 'Cap. 3 — Platform Engineering',
+  };
+
+  async function loadStats() {
+    const key = document.getElementById('admin-key').value.trim();
+    const statusEl = document.getElementById('admin-status');
+    const content = document.getElementById('admin-content');
+
+    if (!key) {
+      statusEl.textContent = 'Escribe la admin key.';
+      statusEl.className = 'admin-status is-error';
+      return;
+    }
+    if (typeof WORKER_URL === 'undefined' || WORKER_URL.includes('YOUR_WORKER_URL')) {
+      statusEl.textContent = 'WORKER_URL no está configurado en app.js.';
+      statusEl.className = 'admin-status is-error';
+      return;
+    }
+
+    statusEl.textContent = 'Cargando…';
+    statusEl.className = 'admin-status';
+
+    try {
+      const res = await fetch(`${WORKER_URL}/admin/stats`, {
+        headers: { 'X-Admin-Key': key },
+      });
+      const data = await res.json();
+      if (!res.ok || !data.ok) {
+        throw new Error(data.error || 'Error desconocido');
+      }
+
+      document.getElementById('stat-active').textContent = data.totals.active;
+      document.getElementById('stat-unsub').textContent = data.totals.unsubscribed;
+      document.getElementById('stat-total').textContent = data.totals.total;
+      document.getElementById('stat-7d').textContent = data.last7Days;
+      document.getElementById('stat-30d').textContent = data.last30Days;
+
+      const chapterBody = document.querySelector('#table-chapter tbody');
+      chapterBody.innerHTML = '';
+      (data.byChapter || []).forEach(row => {
+        const tr = document.createElement('tr');
+        const label = CHAPTER_NAMES[row.chapter] || row.chapter || '(sin elegir)';
+        tr.innerHTML = `<td>${label}</td><td class="mono">${row.count}</td>`;
+        chapterBody.appendChild(tr);
+      });
+
+      const daysBody = document.querySelector('#table-days tbody');
+      daysBody.innerHTML = '';
+      (data.signupsByDay || []).forEach(row => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td class="mono">${row.day}</td><td class="mono">${row.count}</td>`;
+        daysBody.appendChild(tr);
+      });
+
+      statusEl.textContent = '';
+      content.classList.remove('hidden');
+    } catch (err) {
+      statusEl.textContent = 'No se pudo cargar (revisa la key). ' + (err.message || '');
+      statusEl.className = 'admin-status is-error';
+      content.classList.add('hidden');
+    }
+  }
+
+  document.getElementById('admin-load').addEventListener('click', loadStats);
+  document.getElementById('admin-key').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') loadStats();
+  });
+</script>
+</body>
+</html>

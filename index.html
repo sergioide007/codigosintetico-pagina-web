@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Código Sintético — El arte de orquestar agentes de IA</title>
-<meta name="description" content="Un ensayo técnico sobre la era del código generado por IA: por qué el software sin especificación se degrada, y el framework Spec-Driven Development (SDD) para dirigir sistemas multiagente en producción. Descarga un capítulo gratis.">
+<meta name="description" content="Ensayo técnico de 21 capítulos sobre arquitectura, economía y criterio de ingeniería para sistemas multiagente en producción. Ya disponible en Kindle por $9.99. Por Sergio Perez Ruiz (SpecSolid Press).">
 <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
-<meta name="author" content="Sergio Ide · SpecSolid Press">
+<meta name="author" content="Sergio Perez Ruiz · SpecSolid Press">
 <meta name="theme-color" content="#0d0d12">
 <link rel="canonical" href="https://codigosintetico.specsolid.com/">
 <link rel="icon" type="image/x-icon" href="/favicon.ico">
@@ -17,7 +17,7 @@
 <meta property="og:type" content="book">
 <meta property="og:site_name" content="Código Sintético">
 <meta property="og:title" content="Código Sintético — El arte de orquestar agentes de IA">
-<meta property="og:description" content="Un ensayo técnico sobre la era del código generado por IA y el framework Spec-Driven Development (SDD) para dirigir sistemas multiagente en producción.">
+<meta property="og:description" content="Ensayo técnico de 21 capítulos sobre arquitectura, economía y criterio de ingeniería para sistemas multiagente en producción. Ya disponible en Kindle por $9.99.">
 <meta property="og:url" content="https://codigosintetico.specsolid.com/">
 <meta property="og:locale" content="es_ES">
 <meta property="og:image" content="https://codigosintetico.specsolid.com/og-image.jpg">
@@ -26,24 +26,33 @@
 <!-- Twitter -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Código Sintético — El arte de orquestar agentes de IA">
-<meta name="twitter:description" content="Un ensayo técnico sobre la era del código generado por IA y el framework SDD para sistemas multiagente en producción.">
+<meta name="twitter:description" content="Ensayo técnico de 21 capítulos sobre arquitectura, economía y criterio de ingeniería para sistemas multiagente en producción. Ya disponible en Kindle por $9.99.">
 <meta name="twitter:image" content="https://codigosintetico.specsolid.com/og-image.jpg">
 <!-- Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&family=Outfit:wght@700&family=Work+Sans:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <!-- JSON-LD -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "Book",
-  "name": "Código Sintético: El arte de orquestar agentes de IA",
-  "author": { "@type": "Person", "name": "Sergio Ide" },
+  "name": "Código sintético: El arte de orquestar agentes de IA: arquitectura, economía y criterio de ingeniería en la era multiagente",
+  "author": { "@type": "Person", "name": "Sergio Perez Ruiz" },
   "publisher": { "@type": "Organization", "name": "SpecSolid Press" },
   "inLanguage": "es",
   "url": "https://codigosintetico.specsolid.com/",
-  "genre": "Ensayo técnico"
+  "genre": "Ensayo técnico",
+  "isbn": "978-612-03-2931-3",
+  "datePublished": "2026-08",
+  "offers": {
+    "@type": "Offer",
+    "url": "https://www.amazon.com/dp/B0HG96Y1LN",
+    "priceCurrency": "USD",
+    "price": "9.99",
+    "availability": "https://schema.org/InStock"
+  }
 }
 </script>
 </head>
@@ -54,20 +63,23 @@
     <a href="#top" class="brand"><span class="mark">CS</span><span class="bt">Código Sintético</span></a>
     <nav class="nav-links">
       <a href="#libro" class="nav-link">El libro</a>
-      <a href="#capitulos" class="nav-link">Capítulos</a>
-      <a href="#suscripcion" class="nav-link">Descargar capítulo</a>
+      <a href="#capitulos" class="nav-link">Índice</a>
+      <a href="#repos" class="nav-link">Repositorios</a>
+      <a href="#suscripcion" class="nav-link">Capítulo gratis</a>
       <a href="#autor" class="nav-link">Autor</a>
     </nav>
     <div class="nav-cta">
       <a href="https://www.specsolid.com/" class="btn btn-outline btn-sm">SpecSolid ↗</a>
-      <a href="#suscripcion" class="btn btn-gold btn-sm">Descargar capítulo</a>
+      <a href="https://www.amazon.com/dp/B0HG96Y1LN" target="_blank" rel="noopener" class="btn btn-gold btn-sm">Comprar — $9.99</a>
     </div>
     <button class="hamburger" onclick="toggleMenu()" aria-label="Menú">☰</button>
   </div>
   <div class="mobile-menu" id="mobileMenu">
+    <a href="https://www.amazon.com/dp/B0HG96Y1LN" target="_blank" rel="noopener" class="mobile-link" style="color:#e8a33d;font-weight:700">Comprar en Kindle — $9.99 →</a>
     <a href="#libro" class="mobile-link" onclick="toggleMenu()">El libro</a>
-    <a href="#capitulos" class="mobile-link" onclick="toggleMenu()">Capítulos</a>
-    <a href="#suscripcion" class="mobile-link" onclick="toggleMenu()">Descargar capítulo</a>
+    <a href="#capitulos" class="mobile-link" onclick="toggleMenu()">Índice</a>
+    <a href="#repos" class="mobile-link" onclick="toggleMenu()">Repositorios</a>
+    <a href="#suscripcion" class="mobile-link" onclick="toggleMenu()">Capítulo gratis</a>
     <a href="#autor" class="mobile-link" onclick="toggleMenu()">Autor</a>
     <a href="https://www.specsolid.com/" class="mobile-link" onclick="toggleMenu()">SpecSolid ↗</a>
     <a href="https://github.com/sergioide007/synthetic-code" target="_blank" class="mobile-link">Repo del código →</a>
@@ -78,39 +90,33 @@
 <section class="hero" id="top">
   <div class="container hero-grid">
     <div>
-      <div class="eyebrow reveal">SpecSolid Press · Ensayo técnico · 2026</div>
+      <div class="eyebrow reveal">SpecSolid Press · Ya disponible en Kindle · Agosto 2026</div>
       <h1 class="hero-title reveal reveal-1">Código Sintético<em>El arte de orquestar agentes de IA</em></h1>
       <p class="hero-desc reveal reveal-2">
-        Un ensayo técnico sobre la era del código generado por IA: por qué el software sin
-        especificación se degrada, cómo leer la intención detrás de cada línea sintética, y el
-        framework Spec-Driven Development (SDD) que separa a quienes dirigen la IA de quienes
-        simplemente la siguen.
+        21 capítulos sobre arquitectura, economía y criterio de ingeniería para diseñar,
+        gobernar y escalar sistemas multiagente en producción — sin quemar el presupuesto
+        ni la confianza del equipo.
       </p>
       <div class="hero-pills reveal reveal-3">
         <span class="pill">Spec-Driven Development</span>
         <span class="pill">Sistemas multiagente</span>
-        <span class="pill">Arquitectura de software</span>
-        <span class="pill">Ingeniería de IA</span>
+        <span class="pill">Platform Engineering</span>
+        <span class="pill">Gobernanza de IA</span>
       </div>
       <div class="hero-ctas reveal reveal-4">
-        <a href="#suscripcion" class="btn btn-gold">Descargar un capítulo gratis →</a>
-        <a href="https://github.com/sergioide007/synthetic-code" target="_blank" class="btn btn-outline">Ver el código en GitHub</a>
+        <a href="https://www.amazon.com/dp/B0HG96Y1LN" target="_blank" rel="noopener" class="btn btn-gold">Cómpralo en Kindle — $9.99 →</a>
+        <a href="#suscripcion" class="btn btn-outline">Leer 3 capítulos gratis primero</a>
       </div>
       <div class="hero-stats reveal reveal-4">
-        <div><div class="hero-stat-num">SDD</div><div class="hero-stat-lbl">Framework central</div></div>
-        <div><div class="hero-stat-num">2026</div><div class="hero-stat-lbl">Edición</div></div>
+        <div><div class="hero-stat-num">21</div><div class="hero-stat-lbl">Capítulos</div></div>
+        <div><div class="hero-stat-num">2</div><div class="hero-stat-lbl">Repos de código</div></div>
         <div><div class="hero-stat-num">ES</div><div class="hero-stat-lbl">Idioma original</div></div>
       </div>
     </div>
     <div class="book-wrap reveal reveal-2">
       <div class="book-cover-glow"></div>
-      <div class="book-cover">
-        <div class="book-cover-inner">
-          <div class="book-cover-eyebrow">SpecSolid Press</div>
-          <div class="book-cover-title">Código<br>Sintético</div>
-          <div class="book-cover-rule"></div>
-          <div class="book-cover-sub">Sergio Ide · Ed. 2026</div>
-        </div>
+      <div class="book-cover-img">
+        <img src="book-cover.jpg" alt="Portada de Código Sintético: El arte de orquestar agentes de IA, por Sergio Perez Ruiz" width="900" height="1350" loading="eager">
       </div>
     </div>
   </div>
@@ -120,85 +126,185 @@
 <section class="about-section" id="libro">
   <div class="container">
     <div class="section-header center reveal">
-      <div class="eyebrow" style="justify-content:center"><span></span></div>
-      <h2 class="section-title">De qué trata</h2>
+      <h2 class="section-title">Diseña sistemas multiagente</h2>
       <p class="section-sub">
-        La IA ya escribe la mayoría del código nuevo. Este libro no es sobre si eso está bien o mal —
-        es sobre qué separa un sistema que se sostiene en producción de uno que se degrada silenciosamente
-        cuando nadie está mirando la especificación.
+        Computación e inteligencia artificial aplicada. Una guía integral para diseñar,
+        coordinar y escalar sistemas multiagente con inteligencia, eficiencia y propósito.
       </p>
     </div>
     <div class="pillars">
       <div class="pillar reveal reveal-1">
         <div class="pillar-num">01</div>
-        <h3>Especificación como contrato</h3>
-        <p>Por qué el código generado sin una spec explícita acumula deuda técnica invisible, y cómo escribir specs que un agente de IA pueda ejecutar sin perder intención.</p>
+        <h3>Controla el consumo de tokens</h3>
+        <p>Presupuesto y economía real de un pipeline de agentes, antes de que la factura del mes te avise.</p>
       </div>
       <div class="pillar reveal reveal-2">
         <div class="pillar-num">02</div>
-        <h3>Orquestación multiagente</h3>
-        <p>Patrones para coordinar varios agentes de IA trabajando sobre el mismo sistema sin que se pisen entre sí ni degraden la arquitectura.</p>
+        <h3>Controla los costos de API</h3>
+        <p>AI Gateway, límites por equipo y arquitectura asíncrona para que escalar no signifique perder el control del gasto.</p>
       </div>
       <div class="pillar reveal reveal-3">
         <div class="pillar-num">03</div>
-        <h3>Costo y resiliencia</h3>
-        <p>Cómo presupuestar el gasto en tokens de un pipeline de agentes, y qué patrones de resiliencia evitan que un fallo en cascada tumbe todo el sistema.</p>
+        <h3>Mitiga la deuda técnica</h3>
+        <p>La deuda que un equipo humano acumulaba en un año, un sistema agéntico mal gobernado la produce en una semana.</p>
+      </div>
+      <div class="pillar reveal reveal-1">
+        <div class="pillar-num">04</div>
+        <h3>Valida y aprueba los despliegues</h3>
+        <p>RACI para enjambres, revisión de código con agentes y gates de CI/CD que bloquean la deuda agéntica antes de producción.</p>
+      </div>
+      <div class="pillar reveal reveal-2">
+        <div class="pillar-num">05</div>
+        <h3>Diseña arquitecturas resilientes</h3>
+        <p>El arnés del agente, circuit breakers, trazabilidad y los invariantes que todo sistema de producción debe satisfacer.</p>
+      </div>
+      <div class="pillar reveal reveal-3">
+        <div class="pillar-num">06</div>
+        <h3>De código a criterio</h3>
+        <p>Las herramientas cambiarán; el criterio de ingeniería es lo único que se queda contigo de un modelo al siguiente.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ── CAPÍTULOS ── -->
-<section id="capitulos">
+<!-- ── MANIFIESTO (quote) ── -->
+<section>
+  <div class="container quote-block reveal">
+    <blockquote>"La ingeniería de software no desaparece con los agentes. Evoluciona."</blockquote>
+    <cite>— del manifiesto de Código Sintético</cite>
+  </div>
+</section>
+
+<!-- ── ÍNDICE COMPLETO ── -->
+<section id="capitulos" style="background:var(--bg-secondary);border-top:1px solid var(--border-glass);border-bottom:1px solid var(--border-glass)">
   <div class="container">
     <div class="section-header center reveal">
-      <h2 class="section-title">Capítulos disponibles</h2>
-      <p class="section-sub">Tres capítulos ya están listos para descarga gratuita. El resto del libro se anuncia a los suscriptores primero.</p>
+      <h2 class="section-title">Índice completo</h2>
+      <p class="section-sub">21 capítulos organizados en cinco partes, de los fundamentos agénticos al criterio de ingeniería que decide cuánto delegar y cuánto retener.</p>
     </div>
-    <div class="chapters-terminal reveal reveal-1">
-      <div class="term-bar">
-        <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
-        <span class="term-path">codigo-sintetico/ — capítulos</span>
+
+    <div class="pillars" style="grid-template-columns:1fr 1fr;gap:32px;align-items:start" id="toc-grid">
+
+      <div class="toc-part reveal reveal-1">
+        <div class="toc-part-title">Parte I — Fundamentos</div>
+        <div class="toc-row"><span class="toc-num">01</span><span class="toc-title">El despertar agéntico</span><span class="pill" style="margin-left:auto">Gratis</span></div>
+        <div class="toc-row"><span class="toc-num">02</span><span class="toc-title">El AI Engineer</span><span class="pill" style="margin-left:auto">Gratis</span></div>
+        <div class="toc-row"><span class="toc-num">03</span><span class="toc-title">Platform Engineering en la era agéntica</span><span class="pill" style="margin-left:auto">Gratis</span></div>
+        <div class="toc-row"><span class="toc-num">04</span><span class="toc-title">Patrones fundamentales</span></div>
       </div>
-      <div class="term-body">
-        <div class="chapter-row">
-          <div class="chapter-num">01</div>
-          <div class="chapter-body">
-            <div class="chapter-cmd"><span class="prompt">$</span> cat capitulo-1.md</div>
-            <div class="chapter-title">Introducción a los sistemas multiagente</div>
-            <div class="chapter-desc">Qué es un sistema multiagente en la práctica, por qué está apareciendo en pipelines reales de ingeniería, y el vocabulario base que usa el resto del libro.</div>
-          </div>
-          <div class="chapter-status">Disponible</div>
-        </div>
-        <div class="chapter-row">
-          <div class="chapter-num">02</div>
-          <div class="chapter-body">
-            <div class="chapter-cmd"><span class="prompt">$</span> cat capitulo-2.md</div>
-            <div class="chapter-title">Presupuesto y economía de tokens</div>
-            <div class="chapter-desc">Cómo modelar el costo real de un pipeline de agentes y evitar que una automatización bien intencionada termine con una factura fuera de control.</div>
-          </div>
-          <div class="chapter-status">Disponible</div>
-        </div>
-        <div class="chapter-row">
-          <div class="chapter-num">03</div>
-          <div class="chapter-body">
-            <div class="chapter-cmd"><span class="prompt">$</span> cat capitulo-3.md</div>
-            <div class="chapter-title">Resiliencia y circuit breakers</div>
-            <div class="chapter-desc">Patrones para que un sistema multiagente falle de forma controlada en vez de arrastrar todo el pipeline cuando un agente se comporta mal.</div>
-          </div>
-          <div class="chapter-status">Disponible</div>
-        </div>
+
+      <div class="toc-part reveal reveal-2">
+        <div class="toc-part-title">Parte II — Confianza y gobernanza</div>
+        <div class="toc-row"><span class="toc-num">05</span><span class="toc-title">El arnés del agente</span></div>
+        <div class="toc-row"><span class="toc-num">06</span><span class="toc-title">La variable de confianza</span></div>
+        <div class="toc-row"><span class="toc-num">07</span><span class="toc-title">RACI en enjambres</span></div>
+        <div class="toc-row"><span class="toc-num">08</span><span class="toc-title">SOLID para agentes</span></div>
+        <div class="toc-row"><span class="toc-num">09</span><span class="toc-title">Invariantes de producción</span></div>
+      </div>
+
+      <div class="toc-part reveal reveal-3">
+        <div class="toc-part-title">Parte III — Arquitectura en producción</div>
+        <div class="toc-row"><span class="toc-num">10</span><span class="toc-title">DDD + Kafka como sistema nervioso</span></div>
+        <div class="toc-row"><span class="toc-num">11</span><span class="toc-title">Gobernanza de deuda técnica agéntica</span></div>
+        <div class="toc-row"><span class="toc-num">12</span><span class="toc-title">Revisión de código con agentes</span></div>
+        <div class="toc-row"><span class="toc-num">13</span><span class="toc-title">Triaje de producción y debugging autónomo</span></div>
+        <div class="toc-row"><span class="toc-num">14</span><span class="toc-title">Generación de documentación y conocimiento</span></div>
+      </div>
+
+      <div class="toc-part reveal reveal-4">
+        <div class="toc-part-title">Parte IV — Aplicaciones y decisiones</div>
+        <div class="toc-row"><span class="toc-num">15</span><span class="toc-title">Atención al cliente y soporte técnico</span></div>
+        <div class="toc-row"><span class="toc-num">16</span><span class="toc-title">Decisiones arquitectónicas que no puedes automatizar</span></div>
+        <div class="toc-row"><span class="toc-num">17</span><span class="toc-title">Seguridad en sistemas multiagente</span></div>
+        <div class="toc-row"><span class="toc-num">18</span><span class="toc-title">Optimización de costos real</span></div>
+        <div class="toc-row"><span class="toc-num">19</span><span class="toc-title">La geopolítica como restricción arquitectónica</span></div>
+      </div>
+
+      <div class="toc-part reveal reveal-1">
+        <div class="toc-part-title">Parte V — Síntesis</div>
+        <div class="toc-row"><span class="toc-num">20</span><span class="toc-title">El proyecto y sus patrones</span></div>
+        <div class="toc-row"><span class="toc-num">21</span><span class="toc-title">De código a criterio</span></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── REPOSITORIOS DE REFERENCIA ── -->
+<section id="repos">
+  <div class="container">
+    <div class="section-header center reveal">
+      <h2 class="section-title">No es solo teoría — hay código funcionando</h2>
+      <p class="section-sub">Cada patrón central del libro tiene una implementación de referencia ejecutable, con correspondencia verificada capítulo por capítulo.</p>
+    </div>
+
+    <div class="repo-block reveal reveal-1">
+      <div class="repo-head">
+        <span class="repo-name">github.com/sergioide007/synthetic-code</span>
+        <a href="https://github.com/sergioide007/synthetic-code" target="_blank" class="btn btn-outline btn-sm">Ver repo →</a>
+      </div>
+      <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px">
+        Patrones de producción para sistemas multiagente — orquestación eficiente, calidad
+        autónoma en CI/CD, código autolimpiable y arquitecturas resilientes — organizados por
+        dominio en el paquete <code style="font-family:var(--mono);color:var(--accent-orange)">sintetico</code>,
+        más una API de observabilidad con dashboard al estilo Datadog/CloudWatch.
+      </p>
+      <div class="repo-table-wrap">
+        <table class="repo-table">
+          <thead><tr><th>Capítulo</th><th>Módulo</th><th>Qué implementa</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">03</td><td class="mono">budget.py, orchestration.py</td><td>AI Gateway, presupuesto de tokens por equipo, gateway asíncrono</td></tr>
+            <tr><td class="mono">04</td><td class="mono">reasoning.py</td><td>ReAct, Tree of Thoughts, Reflexion</td></tr>
+            <tr><td class="mono">05</td><td class="mono">resilience.py</td><td>Arnés del agente, circuit breaker, auditoría</td></tr>
+            <tr><td class="mono">06</td><td class="mono">quality.py</td><td>TrustScore</td></tr>
+            <tr><td class="mono">07</td><td class="mono">governance.py</td><td>RACI Gate</td></tr>
+            <tr><td class="mono">09</td><td class="mono">governance.py</td><td>Invariantes de producción</td></tr>
+            <tr><td class="mono">11</td><td class="mono">quality.py</td><td>Deuda técnica agéntica (DebtTracker)</td></tr>
+            <tr><td class="mono">12</td><td class="mono">governance.py</td><td>Revisión y aprobación de decisiones</td></tr>
+            <tr><td class="mono">13</td><td class="mono">debugging.py</td><td>Agente de debugging en producción</td></tr>
+            <tr><td class="mono">15</td><td class="mono">governance.py</td><td>Escalado a humanos, atención al cliente</td></tr>
+            <tr><td class="mono">16</td><td class="mono">governance.py</td><td>DatabaseMigrationGate: decisiones irreversibles</td></tr>
+            <tr><td class="mono">17</td><td class="mono">security.py</td><td>Scanner de prompt injection, MCP Host</td></tr>
+            <tr><td class="mono">18</td><td class="mono">orchestration.py, economics.py</td><td>Presupuesto en enjambres, TCO/ROI</td></tr>
+            <tr><td class="mono">19</td><td class="mono">providers.py</td><td>Patrón Backend-Agnostic</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="repo-block reveal reveal-2">
+      <div class="repo-head">
+        <span class="repo-name">github.com/sergioide007/codigo-sintetico-labs</span>
+        <a href="https://github.com/sergioide007/codigo-sintetico-labs" target="_blank" class="btn btn-outline btn-sm">Ver repo →</a>
+      </div>
+      <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px">
+        Siete repositorios satélite con patrones adicionales del stack moderno — un adelanto
+        ejecutable del <strong style="color:#fff">Volumen 1</strong> de la serie (proyectada en 4 volúmenes).
+      </p>
+      <div class="repo-table-wrap">
+        <table class="repo-table">
+          <thead><tr><th>Tema</th><th>Repositorio</th><th>Desarrollo</th></tr></thead>
+          <tbody>
+            <tr><td>Patrón Council (debate y consenso multiagente)</td><td class="mono">architecture-council</td><td>Cap. 8 y catálogo del cap. 20 · ampliado en Vol. 1</td></tr>
+            <tr><td>Clean Architecture / "el modelo es un detalle"</td><td class="mono">llm-port-java-node</td><td>Se desarrolla en el Vol. 1</td></tr>
+            <tr><td>Métrica CIU y Token-Burn silencioso</td><td class="mono">ciu-tracker</td><td>Se desarrolla en el Vol. 1</td></tr>
+            <tr><td>Estimación Monte Carlo</td><td class="mono">agent-montecarlo</td><td>Se desarrolla en el Vol. 1</td></tr>
+            <tr><td>Pirámide de testing (evals)</td><td class="mono">eval-harness-minimal</td><td>Se desarrolla en el Vol. 1</td></tr>
+            <tr><td>Kafka como ciudadano del log</td><td class="mono">kafka-agent-citizen</td><td>Cap. 10 · ampliado en Vol. 1</td></tr>
+            <tr><td>Trazas OpenTelemetry</td><td class="mono">agent-otel-tracing</td><td>Se desarrolla en el Vol. 1</td></tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ── SUSCRIPCIÓN (site-snippet/subscribe-form) ── -->
+<!-- ── SUSCRIPCIÓN / LEAD MAGNET ── -->
 <section class="subscribe-section" id="suscripcion" aria-labelledby="subscribe-title">
   <div class="container">
     <div class="section-header center reveal">
-      <h2 class="section-title" id="subscribe-title">Descarga un capítulo gratis</h2>
-      <p class="section-sub">Elige el capítulo que quieres leer primero. Te llega directo a tu correo, sin costo.</p>
+      <h2 class="section-title" id="subscribe-title">Descarga los 3 primeros capítulos, gratis</h2>
+      <p class="section-sub">Completos, sin resumen. Elige por cuál empezar — te llega directo a tu correo.</p>
     </div>
 
     <form id="subscribe-form" class="subscribe-form reveal reveal-1" novalidate>
@@ -209,9 +315,9 @@
 
       <div class="subscribe-row">
         <select name="chapter" id="sub-chapter">
-          <option value="cap1">Capítulo 1 — Introducción a los sistemas multiagente</option>
-          <option value="cap2">Capítulo 2 — Presupuesto y economía de tokens</option>
-          <option value="cap3">Capítulo 3 — Resiliencia y circuit breakers</option>
+          <option value="cap1">Capítulo 1 — El despertar agéntico</option>
+          <option value="cap2">Capítulo 2 — El AI Engineer</option>
+          <option value="cap3">Capítulo 3 — Platform Engineering en la era agéntica</option>
         </select>
       </div>
 
@@ -229,7 +335,21 @@
 
       <p class="subscribe-status" id="subscribe-status" role="status" aria-live="polite"></p>
     </form>
-    <p class="subscribe-note">Sin spam. Puedes darte de baja con un clic desde cualquier correo que te enviemos.</p>
+    <p class="subscribe-note">Sin spam. Te avisamos cuando salgan la tapa blanda, la tapa dura y las demás plataformas. Puedes darte de baja con un clic.</p>
+
+    <div class="lead-magnet reveal reveal-2" style="margin-top:56px">
+      <div class="lm-eyebrow">Edición completa</div>
+      <h3>Ya disponible en Kindle — el resto, en camino</h3>
+      <p>El eBook ya se puede comprar. La tapa blanda y la tapa dura están en revisión en Amazon y aparecerán en la misma página en cuanto se aprueben; Google Play Books y Lulu siguen en proceso.</p>
+      <div class="retailers" style="justify-content:center">
+        <a href="https://www.amazon.com/dp/B0HG96Y1LN" target="_blank" rel="noopener" class="retailer live">
+          Amazon Kindle <span class="price">$9,99 USD</span> <span class="live-badge">Disponible</span>
+        </a>
+        <div class="retailer">Tapa blanda / tapa dura (Amazon) <span class="soon">En revisión</span></div>
+        <div class="retailer">Google Play Books <span class="soon">Próximamente</span></div>
+        <div class="retailer">Lulu <span class="soon">Próximamente</span></div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -237,13 +357,17 @@
 <section class="author-section" id="autor">
   <div class="container">
     <div class="author-card reveal">
-      <div class="author-avatar">SI</div>
+      <img src="author-photo.png" alt="Foto de Sergio Perez Ruiz" width="76" height="76" style="border-radius:50%;flex-shrink:0;object-fit:cover" loading="lazy">
       <div>
-        <div class="author-name">Sergio Ide</div>
+        <div class="author-name">Sergio Perez Ruiz</div>
         <div class="author-role">SpecSolid Press</div>
         <p class="author-bio">
-          Autor de Código Sintético e impulsor de SpecSolid, un laboratorio de investigación
-          en Spec-Driven Development y arquitectura de software para sistemas de IA en producción.
+          Ingeniero de sistemas y especialista en sistemas de inteligencia artificial aplicada.
+          Durante más de una década ha diseñado sistemas distribuidos en entornos de alta
+          exigencia. Su trabajo se centra en plataformas agénticas de producción, la economía
+          de los sistemas basados en modelos de lenguaje y la formación de equipos de
+          ingeniería para la era de la orquestación. Este libro condensa esa experiencia
+          práctica con el rigor de la literatura académica revisada por pares.
         </p>
         <div class="author-links">
           <a href="https://github.com/sergioide007" target="_blank">github.com/sergioide007</a>
@@ -259,7 +383,7 @@
 <footer>
   <div class="container">
     <div class="footer-row">
-      <div class="footer-brand">Código Sintético · SpecSolid Press · © 2026</div>
+      <div class="footer-brand">Código Sintético · SpecSolid Press · © 2026 Sergio Perez Ruiz</div>
       <div class="footer-links">
         <a href="https://www.specsolid.com/">SpecSolid</a>
         <a href="https://github.com/sergioide007/synthetic-code" target="_blank">Repositorio</a>
@@ -268,9 +392,11 @@
       </div>
     </div>
     <p class="footer-legal">
-      Código Sintético es una publicación independiente de SpecSolid Press. Los capítulos gratuitos
-      se entregan por correo mediante un enlace de descarga firmado, válido por 7 días. Puedes darte
-      de baja en cualquier momento desde el enlace incluido en cada correo.
+      Primera edición digital, agosto de 2026 · Lima, Perú. ISBN edición digital (EPUB):
+      978-612-03-2914-6 · ISBN edición digital (PDF): 978-612-03-2931-3 · Todos los derechos
+      reservados. Los capítulos gratuitos se entregan por correo mediante un enlace de
+      descarga firmado, válido por 7 días. Puedes darte de baja en cualquier momento desde
+      el enlace incluido en cada correo.
     </p>
   </div>
 </footer>

@@ -6,6 +6,15 @@ compatibility_date = "2026-08-01"
 ALLOWED_ORIGIN = "https://codigosintetico.specsolid.com"
 SENDER_NAME = "Sergio Perez Ruiz"
 SENDER_EMAIL = "sergio@specsolid.com"
+# URL pública del propio Worker una vez desplegado (paso 9 del README).
+# La usa la secuencia de seguimiento (cron) para armar el enlace de baja,
+# ya que ahí no hay un `request` del que leer el origin.
+WORKER_ORIGIN = "https://specsolid-newsletter.sergioide007.workers.dev"
+
+# Corre la secuencia de seguimiento (día 3 / día 7) una vez al día.
+# "0 14 * * *" = 14:00 UTC = 09:00 hora de Lima.
+[triggers]
+crons = ["0 14 * * *"]
 
 [[d1_databases]]
 binding = "DB"
