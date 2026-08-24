@@ -1,4 +1,4 @@
-import { chapterEmailHtml, CHAPTER_LABELS } from "./templates.js";
+import { chapterEmailHtml, day3FollowUpHtml, day7FollowUpHtml, CHAPTER_LABELS } from "./templates.js";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -108,6 +108,80 @@ async function handleDownload(request, env) {
   });
 }
 
+// ── Iteración 3: panel de solo lectura ──────────────────────────────────
+// Protegido por un header simple (X-Admin-Key) comparado contra el secret
+// ADMIN_KEY. No expone la lista de correos, solo conteos agregados.
+async function handleAdminStats(request, env) {
+  const key = request.headers.get("X-Admin-Key") || "";
+  if (!env.ADMIN_KEY || key !== env.ADMIN_KEY) {
+    return json({ ok: false, error: "No autorizado." }, 401, {
+      "Access-Control-Allow-Origin": "*",
+    });
+  }
+
+  const cors = { "Access-Control-Allow-Origin": "*" };
+
+  const totals = await env.DB
+    .prepare(
+      `SELECT
+         COUNT(*) FILTER (WHERE status = 'active') AS active,
+         COUNT(*) FILTER (WHERE status = 'unsubscribed') AS unsubscribed,
+         COUNT(*) AS total
+       FROM subscribers`
+    )
+    .first();
+
+  const byChapter = await env.DB
+    .prepare(
+      `SELECT chapter_selected AS chapter, COUNT(*) AS count
+       FROM subscribers
+       WHERE status = 'active'
+       GROUP BY chapter_selected`
+    )
+    .all();
+
+  const last7d = await env.DB
+    .prepare(
+      `SELECT COUNT(*) AS count FROM subscribers
+       WHERE created_at >= datetime('now', '-7 days')`
+    )
+    .first();
+
+  const last30d = await env.DB
+    .prepare(
+      `SELECT COUNT(*) AS count FROM subscribers
+       WHERE created_at >= datetime('now', '-30 days')`
+    )
+    .first();
+
+  const recentSignups = await env.DB
+    .prepare(
+      `SELECT date(created_at) AS day, COUNT(*) AS count
+       FROM subscribers
+       WHERE created_at >= datetime('now', '-14 days')
+       GROUP BY day
+       ORDER BY day DESC`
+    )
+    .all();
+
+  return json(
+    {
+      ok: true,
+      totals: {
+        active: totals?.active || 0,
+        unsubscribed: totals?.unsubscribed || 0,
+        total: totals?.total || 0,
+      },
+      byChapter: byChapter?.results || [],
+      last7Days: last7d?.count || 0,
+      last30Days: last30d?.count || 0,
+      signupsByDay: recentSignups?.results || [],
+    },
+    200,
+    cors
+  );
+}
+
 async function sendBrevoEmail(env, { toEmail, toName, subject, html }) {
   const res = await fetch("https://api.brevo.com/v3/smtp/email", {
     method: "POST",
@@ -127,6 +201,89 @@ async function sendBrevoEmail(env, { toEmail, toName, subject, html }) {
     const errText = await res.text();
     throw new Error(`Brevo respondió ${res.status}: ${errText}`);
   }
+}
+
+// ── Iteración 2: secuencia de seguimiento (día 3 / día 7) ───────────────
+// Se dispara desde el Cron Trigger configurado en wrangler.toml. Cada
+// corrida busca suscriptores activos a los que ya les toca el correo de
+// día 3 o día 7 (según `created_at`) y que todavía no lo recibieron, y
+// marca la columna correspondiente para no duplicar envíos.
+async function runFollowUpSequence(env) {
+  const results = { day3Sent: 0, day7Sent: 0, errors: [] };
+
+  const day3Due = await env.DB
+    .prepare(
+      `SELECT id, email, name, chapter_selected FROM subscribers
+       WHERE status = 'active'
+         AND day3_sent_at IS NULL
+         AND created_at <= datetime('now', '-3 days')`
+    )
+    .all();
+
+  for (const sub of day3Due?.results || []) {
+    try {
+      const unsubSig = await hmacHex(env.UNSUB_SECRET, sub.email);
+      const workerOrigin = env.WORKER_ORIGIN || "";
+      const unsubUrl = `${workerOrigin}/unsubscribe?email=${encodeURIComponent(sub.email)}&sig=${unsubSig}`;
+
+      const html = day3FollowUpHtml({
+        name: sub.name,
+        chapterKey: sub.chapter_selected,
+        unsubscribeUrl: unsubUrl,
+      });
+
+      await sendBrevoEmail(env, {
+        toEmail: sub.email,
+        toName: sub.name,
+        subject: "¿Qué te pareció el capítulo? — Código Sintético",
+        html,
+      });
+
+      await env.DB
+        .prepare("UPDATE subscribers SET day3_sent_at = datetime('now') WHERE id = ?")
+        .bind(sub.id)
+        .run();
+      results.day3Sent++;
+    } catch (err) {
+      results.errors.push(`day3:${sub.email}:${err.message || err}`);
+    }
+  }
+
+  const day7Due = await env.DB
+    .prepare(
+      `SELECT id, email, name FROM subscribers
+       WHERE status = 'active'
+         AND day7_sent_at IS NULL
+         AND created_at <= datetime('now', '-7 days')`
+    )
+    .all();
+
+  for (const sub of day7Due?.results || []) {
+    try {
+      const unsubSig = await hmacHex(env.UNSUB_SECRET, sub.email);
+      const workerOrigin = env.WORKER_ORIGIN || "";
+      const unsubUrl = `${workerOrigin}/unsubscribe?email=${encodeURIComponent(sub.email)}&sig=${unsubSig}`;
+
+      const html = day7FollowUpHtml({ name: sub.name, unsubscribeUrl: unsubUrl });
+
+      await sendBrevoEmail(env, {
+        toEmail: sub.email,
+        toName: sub.name,
+        subject: "Antes de que se te pase — Código Sintético",
+        html,
+      });
+
+      await env.DB
+        .prepare("UPDATE subscribers SET day7_sent_at = datetime('now') WHERE id = ?")
+        .bind(sub.id)
+        .run();
+      results.day7Sent++;
+    } catch (err) {
+      results.errors.push(`day7:${sub.email}:${err.message || err}`);
+    }
+  }
+
+  return results;
 }
 
 async function handleSubscribe(request, env) {
@@ -262,10 +419,21 @@ export default {
       return handleDownload(request, env);
     }
 
+    if (url.pathname === "/admin/stats" && request.method === "GET") {
+      return handleAdminStats(request, env);
+    }
+
     if (url.pathname === "/unsubscribe" && request.method === "GET") {
       return handleUnsubscribe(request, env);
     }
 
     return new Response("Not found", { status: 404 });
+  },
+
+  // Cron Trigger (ver [triggers] en wrangler.toml) — corre la secuencia de
+  // seguimiento de día 3 / día 7. No hace nada si no hay suscriptores que
+  // les toque un correo todavía.
+  async scheduled(controller, env, ctx) {
+    ctx.waitUntil(runFollowUpSequence(env));
   },
 };
