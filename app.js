@@ -78,7 +78,7 @@ function initSubscribeForm() {
       form.reset();
       if (window.turnstile) window.turnstile.reset();
     } catch (err) {
-      statusEl.textContent = 'No se pudo enviar. Intenta de nuevo en unos minutos.';
+      statusEl.textContent = err.message || 'No se pudo enviar. Intenta de nuevo en unos minutos.';
       statusEl.className = 'subscribe-status is-error';
     } finally {
       submitBtn.disabled = false;
