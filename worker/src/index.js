@@ -402,32 +402,84 @@ async function handleUnsubscribe(request, env) {
   );
 }
 
+// Variables/secrets que el Worker necesita para funcionar. Si falta
+// cualquiera de estas, antes se traducía en una excepción sin manejar
+// (el navegador la veía como "error de CORS" porque la respuesta de error
+// no traía ningún header). Ahora se valida explícitamente y se devuelve un
+// mensaje claro que dice exactamente qué falta configurar.
+const REQUIRED_ENV_VARS = [
+  "ALLOWED_ORIGIN",
+  "BREVO_API_KEY",
+  "TURNSTILE_SECRET_KEY",
+  "UNSUB_SECRET",
+  "DOWNLOAD_SECRET",
+  "SENDER_EMAIL",
+  "SENDER_NAME",
+];
+
+function missingEnvVars(env) {
+  return REQUIRED_ENV_VARS.filter((key) => !env[key]);
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     const origin = request.headers.get("Origin") || "";
+    const cors = corsHeaders(origin, env.ALLOWED_ORIGIN || "*");
 
-    if (request.method === "OPTIONS") {
-      return new Response(null, { headers: corsHeaders(origin, env.ALLOWED_ORIGIN) });
+    try {
+      if (request.method === "OPTIONS") {
+        return new Response(null, { headers: cors });
+      }
+
+      // Estas 2 rutas necesitan las variables/secrets configurados para
+      // funcionar (firman enlaces y envían correo). Si falta alguna,
+      // devolvemos un error claro en vez de dejar que truene sin avisar.
+      if (
+        (url.pathname === "/subscribe" && request.method === "POST") ||
+        (url.pathname === "/download" && request.method === "GET")
+      ) {
+        const missing = missingEnvVars(env);
+        if (missing.length > 0) {
+          return json(
+            {
+              ok: false,
+              error: `Falta configurar en el Worker: ${missing.join(", ")}. Ve a Settings → Variables and Secrets.`,
+            },
+            500,
+            cors
+          );
+        }
+      }
+
+      if (url.pathname === "/subscribe" && request.method === "POST") {
+        return await handleSubscribe(request, env);
+      }
+
+      if (url.pathname === "/download" && request.method === "GET") {
+        return await handleDownload(request, env);
+      }
+
+      if (url.pathname === "/admin/stats" && request.method === "GET") {
+        return await handleAdminStats(request, env);
+      }
+
+      if (url.pathname === "/unsubscribe" && request.method === "GET") {
+        return await handleUnsubscribe(request, env);
+      }
+
+      return new Response("Not found", { status: 404, headers: cors });
+    } catch (err) {
+      // Red de seguridad: cualquier excepción no prevista, de cualquier
+      // ruta, SIEMPRE devuelve una respuesta con headers CORS y el mensaje
+      // real del error — nunca más una respuesta "en blanco" que el
+      // navegador reporte como fallo de CORS.
+      return json(
+        { ok: false, error: `Error interno: ${err.message || String(err)}` },
+        500,
+        cors
+      );
     }
-
-    if (url.pathname === "/subscribe" && request.method === "POST") {
-      return handleSubscribe(request, env);
-    }
-
-    if (url.pathname === "/download" && request.method === "GET") {
-      return handleDownload(request, env);
-    }
-
-    if (url.pathname === "/admin/stats" && request.method === "GET") {
-      return handleAdminStats(request, env);
-    }
-
-    if (url.pathname === "/unsubscribe" && request.method === "GET") {
-      return handleUnsubscribe(request, env);
-    }
-
-    return new Response("Not found", { status: 404 });
   },
 
   // Cron Trigger (ver [triggers] en wrangler.toml) — corre la secuencia de
