@@ -23,6 +23,10 @@
 <meta property="og:image" content="https://codigosintetico.specsolid.com/og-image.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
+<meta property="og:video" content="https://codigosintetico.specsolid.com/codigo-sintetico-trailer.mp4">
+<meta property="og:video:type" content="video/mp4">
+<meta property="og:video:width" content="1080">
+<meta property="og:video:height" content="1920">
 <!-- Twitter -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Código Sintético — El arte de orquestar agentes de IA">
@@ -85,6 +89,7 @@
       <a href="#capitulos" class="nav-link">Índice</a>
       <a href="#repos" class="nav-link">Repositorios</a>
       <a href="#suscripcion" class="nav-link">Capítulo gratis</a>
+      <a href="#video" class="nav-link">Video</a>
       <a href="#autor" class="nav-link">Autor</a>
     </nav>
     <div class="nav-cta">
@@ -99,6 +104,7 @@
     <a href="#capitulos" class="mobile-link" onclick="toggleMenu()">Índice</a>
     <a href="#repos" class="mobile-link" onclick="toggleMenu()">Repositorios</a>
     <a href="#suscripcion" class="mobile-link" onclick="toggleMenu()">Capítulo gratis</a>
+    <a href="#video" class="mobile-link" onclick="toggleMenu()">Video</a>
     <a href="#autor" class="mobile-link" onclick="toggleMenu()">Autor</a>
     <a href="https://www.specsolid.com/" class="mobile-link" onclick="toggleMenu()">SpecSolid ↗</a>
     <a href="https://github.com/sergioide007/synthetic-code" target="_blank" class="mobile-link">Repo del código →</a>
@@ -377,6 +383,49 @@
   </div>
 </section>
 
+<!-- ── VIDEO / COMPARTIR ── -->
+<section class="video-section" id="video">
+  <div class="container">
+    <div class="section-header center reveal">
+      <h2 class="section-title">Ayúdanos a correr la voz</h2>
+      <p class="section-sub">Un video corto y vertical, listo para compartir tal cual en tus redes. Cada persona que lo comparta le da una oportunidad más al libro.</p>
+    </div>
+
+    <div class="video-wrap reveal reveal-1">
+      <video
+        id="promo-video"
+        controls
+        playsinline
+        preload="metadata"
+        poster="video-poster.jpg"
+        width="1080" height="1920">
+        <source src="codigo-sintetico-trailer.mp4" type="video/mp4">
+        Tu navegador no soporta video HTML5. <a href="codigo-sintetico-trailer.mp4">Descárgalo aquí</a>.
+      </video>
+    </div>
+
+    <div class="video-actions reveal reveal-2">
+      <button id="btn-share-video" class="btn btn-gold" style="display:none">Compartir ahora →</button>
+      <a href="codigo-sintetico-trailer.mp4" download="codigo-sintetico-trailer.mp4" class="btn btn-outline" id="btn-download-video">Descargar video (MP4, vertical)</a>
+    </div>
+
+    <p class="video-hint" id="video-hint">
+      En el celular, "Compartir" abre el menú nativo para mandarlo directo a TikTok, Instagram, WhatsApp, Telegram, X o donde prefieras. En computadora, descárgalo y súbelo manualmente.
+    </p>
+
+    <div class="video-platforms reveal reveal-3">
+      <span class="video-platform-tag">TikTok</span>
+      <span class="video-platform-tag">Instagram Reels</span>
+      <span class="video-platform-tag">YouTube Shorts</span>
+      <span class="video-platform-tag">LinkedIn</span>
+      <span class="video-platform-tag">WhatsApp</span>
+      <span class="video-platform-tag">X / Twitter</span>
+      <span class="video-platform-tag">Telegram</span>
+      <span class="video-platform-tag">Twitch</span>
+    </div>
+  </div>
+</section>
+
 <!-- ── AUTOR ── -->
 <section class="author-section" id="autor">
   <div class="container">
@@ -426,6 +475,6 @@
 </footer>
 
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-<script src="app.js?v=1787826906"></script>
+<script src="app.js?v=1787895677"></script>
 </body>
 </html>
