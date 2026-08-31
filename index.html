@@ -74,6 +74,41 @@
       "priceCurrency": "USD",
       "price": "30.99",
       "availability": "https://schema.org/InStock"
+    },
+    {
+      "@type": "Offer",
+      "name": "ePub (Lulu)",
+      "url": "https://www.lulu.com/es/shop/sergio-perez-ruiz/c%C3%B3digo-sint%C3%A9tico/ebook/product-kv4vpkw.html",
+      "priceCurrency": "USD",
+      "availability": "https://schema.org/InStock"
+    },
+    {
+      "@type": "Offer",
+      "name": "Tapa blanda (Lulu)",
+      "url": "https://www.lulu.com/es/shop/sergio-perez-ruiz/c%C3%B3digo-sint%C3%A9tico/paperback/product-84qzqdm.html",
+      "priceCurrency": "USD",
+      "availability": "https://schema.org/InStock"
+    },
+    {
+      "@type": "Offer",
+      "name": "Tapa dura (Lulu)",
+      "url": "https://www.lulu.com/es/shop/sergio-perez-ruiz/c%C3%B3digo-sint%C3%A9tico/hardcover/product-w48zvd4.html",
+      "priceCurrency": "USD",
+      "availability": "https://schema.org/InStock"
+    },
+    {
+      "@type": "Offer",
+      "name": "eBook (Books2Read — múltiples tiendas)",
+      "url": "https://books2read.com/u/b5dRJp",
+      "priceCurrency": "USD",
+      "availability": "https://schema.org/InStock"
+    },
+    {
+      "@type": "Offer",
+      "name": "eBook PDF (Gumroad, directo del autor)",
+      "url": "https://sergioide.gumroad.com/l/codigo-sintetico",
+      "priceCurrency": "USD",
+      "availability": "https://schema.org/InStock"
     }
   ]
 }
@@ -88,21 +123,23 @@
       <a href="#libro" class="nav-link">El libro</a>
       <a href="#capitulos" class="nav-link">Índice</a>
       <a href="#repos" class="nav-link">Repositorios</a>
+      <a href="#comprar" class="nav-link">Dónde comprar</a>
       <a href="#suscripcion" class="nav-link">Capítulo gratis</a>
       <a href="#video" class="nav-link">Video</a>
       <a href="#autor" class="nav-link">Autor</a>
     </nav>
     <div class="nav-cta">
       <a href="https://www.specsolid.com/" class="btn btn-outline btn-sm">SpecSolid ↗</a>
-      <a href="https://www.amazon.com/dp/B0HG96Y1LN" target="_blank" rel="noopener" class="btn btn-gold btn-sm">Comprar — $9.99</a>
+      <a href="#comprar" class="btn btn-gold btn-sm">Comprar ahora</a>
     </div>
     <button class="hamburger" onclick="toggleMenu()" aria-label="Menú">☰</button>
   </div>
   <div class="mobile-menu" id="mobileMenu">
-    <a href="https://www.amazon.com/dp/B0HG96Y1LN" target="_blank" rel="noopener" class="mobile-link" style="color:#e8a33d;font-weight:700">Comprar en Kindle — $9.99 →</a>
+    <a href="#comprar" class="mobile-link" onclick="toggleMenu()" style="color:#e8a33d;font-weight:700">Ver dónde comprarlo →</a>
     <a href="#libro" class="mobile-link" onclick="toggleMenu()">El libro</a>
     <a href="#capitulos" class="mobile-link" onclick="toggleMenu()">Índice</a>
     <a href="#repos" class="mobile-link" onclick="toggleMenu()">Repositorios</a>
+    <a href="#comprar" class="mobile-link" onclick="toggleMenu()">Dónde comprar</a>
     <a href="#suscripcion" class="mobile-link" onclick="toggleMenu()">Capítulo gratis</a>
     <a href="#video" class="mobile-link" onclick="toggleMenu()">Video</a>
     <a href="#autor" class="mobile-link" onclick="toggleMenu()">Autor</a>
@@ -115,7 +152,7 @@
 <section class="hero" id="top">
   <div class="container hero-grid">
     <div>
-      <div class="eyebrow reveal">SpecSolid Press · Ya disponible en Kindle · Agosto 2026</div>
+      <div class="eyebrow reveal">SpecSolid Press · Ya disponible en Kindle, tapa blanda, tapa dura y ePub · Agosto 2026</div>
       <h1 class="hero-title reveal reveal-1">Código Sintético<em>El arte de orquestar agentes de IA</em></h1>
       <p class="hero-desc reveal reveal-2">
         21 capítulos sobre arquitectura, economía y criterio de ingeniería para diseñar,
@@ -129,7 +166,7 @@
         <span class="pill">Gobernanza de IA</span>
       </div>
       <div class="hero-ctas reveal reveal-4">
-        <a href="https://www.amazon.com/dp/B0HG96Y1LN" target="_blank" rel="noopener" class="btn btn-gold">Cómpralo en Kindle — $9.99 →</a>
+        <a href="#comprar" class="btn btn-gold">Ver dónde comprarlo — desde $9.99 →</a>
         <a href="#suscripcion" class="btn btn-outline">Leer 3 capítulos gratis primero</a>
       </div>
       <div class="hero-stats reveal reveal-4">
@@ -360,25 +397,56 @@
 
       <p class="subscribe-status" id="subscribe-status" role="status" aria-live="polite"></p>
     </form>
-    <p class="subscribe-note">Sin spam. Te avisamos cuando salgan la tapa blanda, la tapa dura y las demás plataformas. Puedes darte de baja con un clic.</p>
+    <p class="subscribe-note">Sin spam. Te avisamos de nuevas ediciones, promociones y contenido extra. Puedes darte de baja con un clic.</p>
 
-    <div class="lead-magnet reveal reveal-2" style="margin-top:56px">
-      <div class="lm-eyebrow">Edición completa</div>
-      <h3>Ya disponible en Kindle, tapa blanda y tapa dura</h3>
-      <p>Elige tu formato favorito en Amazon. Google Play Books y Lulu siguen en proceso.</p>
-      <div class="retailers" style="justify-content:center">
-        <a href="https://www.amazon.com/dp/B0HG96Y1LN" target="_blank" rel="noopener" class="retailer live">
-          Amazon Kindle <span class="price">$9,99 USD</span> <span class="live-badge">Disponible</span>
-        </a>
-        <a href="https://www.amazon.com/dp/B0HGFD1Y6G" target="_blank" rel="noopener" class="retailer live">
-          Tapa blanda <span class="price">$14,99 USD</span> <span class="live-badge">Disponible</span>
-        </a>
-        <a href="https://www.amazon.com/dp/B0HGGH9P77" target="_blank" rel="noopener" class="retailer live">
-          Tapa dura <span class="price">$30,99 USD</span> <span class="live-badge">Disponible</span>
-        </a>
-        <div class="retailer">Google Play Books <span class="soon">Próximamente</span></div>
-        <div class="retailer">Lulu <span class="soon">Próximamente</span></div>
+    <div class="lead-magnet reveal reveal-2" id="comprar" style="margin-top:56px;max-width:780px;scroll-margin-top:88px">
+      <div class="lm-eyebrow">Edición completa · disponible ahora</div>
+      <h3>Consíguelo en tu tienda favorita</h3>
+      <p>Mismo libro, el formato y la plataforma que prefieras — elige la que más te convenga y compra directo.</p>
+
+      <div class="retailer-group">
+        <div class="retailer-group-title">eBook</div>
+        <div class="retailers" style="justify-content:center">
+          <a href="https://www.amazon.com/dp/B0HG96Y1LN" target="_blank" rel="noopener" class="retailer live">
+            Amazon Kindle <span class="price">$9,99 USD</span> <span class="live-badge">Disponible</span>
+          </a>
+          <a href="https://www.lulu.com/es/shop/sergio-perez-ruiz/c%C3%B3digo-sint%C3%A9tico/ebook/product-kv4vpkw.html?page=1&amp;pageSize=4" target="_blank" rel="noopener" class="retailer live">
+            Lulu (ePub) <span class="live-badge">Disponible</span>
+          </a>
+          <a href="https://books2read.com/u/b5dRJp" target="_blank" rel="noopener" class="retailer live">
+            Books2Read <span class="live-badge">Apple, Kobo, B&amp;N y más</span>
+          </a>
+          <a href="https://sergioide.gumroad.com/l/codigo-sintetico?wanted=true" target="_blank" rel="noopener" class="retailer live">
+            Gumroad <span class="live-badge">PDF directo del autor</span>
+          </a>
+        </div>
       </div>
+
+      <div class="retailer-group">
+        <div class="retailer-group-title">Tapa blanda</div>
+        <div class="retailers" style="justify-content:center">
+          <a href="https://www.amazon.com/dp/B0HGFD1Y6G" target="_blank" rel="noopener" class="retailer live">
+            Amazon <span class="price">$14,99 USD</span> <span class="live-badge">Disponible</span>
+          </a>
+          <a href="https://www.lulu.com/es/shop/sergio-perez-ruiz/c%C3%B3digo-sint%C3%A9tico/paperback/product-84qzqdm.html?page=1&amp;pageSize=4" target="_blank" rel="noopener" class="retailer live">
+            Lulu <span class="live-badge">Disponible</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="retailer-group">
+        <div class="retailer-group-title">Tapa dura</div>
+        <div class="retailers" style="justify-content:center">
+          <a href="https://www.amazon.com/dp/B0HGGH9P77" target="_blank" rel="noopener" class="retailer live">
+            Amazon <span class="price">$30,99 USD</span> <span class="live-badge">Disponible</span>
+          </a>
+          <a href="https://www.lulu.com/es/shop/sergio-perez-ruiz/c%C3%B3digo-sint%C3%A9tico/hardcover/product-w48zvd4.html?page=1&amp;pageSize=4" target="_blank" rel="noopener" class="retailer live">
+            Lulu <span class="live-badge">Disponible</span>
+          </a>
+        </div>
+      </div>
+
+      <p class="retailer-footnote">También próximamente en Google Play Books.</p>
     </div>
   </div>
 </section>
