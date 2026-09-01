@@ -1,10 +1,30 @@
 # Código Sintético — sitio y suscripción de capítulos
 
 Sitio de **Código Sintético: El arte de orquestar agentes de IA** (Sergio
-Perez Ruiz · SpecSolid Press), alojado en `codigosintetico.specsolid.com`.
+Perez Ruiz · SpecSolid Press), alojado en
+[codigosintetico.specsolid.com](https://codigosintetico.specsolid.com/).
 El repo contiene el sitio estático, el backend (Cloudflare Worker) que
 gestiona la suscripción por correo y la entrega de capítulos en PDF, la
 secuencia de seguimiento por correo, y un panel de solo lectura.
+
+## SEO / indexación
+
+[codigosintetico.specsolid.com](https://codigosintetico.specsolid.com/) aún
+no aparece en los resultados de Google. Técnicamente el sitio ya está listo
+(HTML estático, `robots.txt`, `sitemap.xml`, JSON-LD `Book` y `FAQPage`,
+Open Graph completo) — lo que falta es indexación y autoridad, no código:
+
+1. **Google Search Console**: verifica la propiedad `codigosintetico.specsolid.com`
+   (mejor por DNS TXT en Cloudflare, sin tocar el HTML), envía
+   `sitemap.xml` y usa "Inspeccionar URL → Solicitar indexación" en la
+   página principal.
+2. **Bing Webmaster Tools**: repite el mismo proceso — alimenta también a
+   DuckDuckGo y Yahoo.
+3. **Backlinks reales**: hoy casi no hay enlaces externos apuntando al
+   sitio. Cada enlace desde un lugar de autoridad ayuda a que se indexe más
+   rápido y rankee mejor: perfil de autor en Amazon, ficha en Goodreads /
+   StoryGraph, bio de X/LinkedIn/GitHub, un post en Reddit o Hacker News, un
+   artículo en dev.to, etc.
 
 ![Arquitectura del sistema](architecture.jpeg)
 
