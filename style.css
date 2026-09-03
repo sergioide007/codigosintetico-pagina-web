@@ -302,6 +302,97 @@ table.repo-table td{padding:11px 16px;border-bottom:1px solid rgba(255,255,255,.
 table.repo-table tr:last-child td{border-bottom:none}
 table.repo-table td.mono{font-family:var(--mono);color:var(--text-primary);white-space:nowrap}
 
+/* ── INFOGRAFÍAS: carrusel + lightbox + compartir ── */
+.info-scroller-wrap{position:relative;margin-top:36px}
+.info-scroller{
+  display:flex;gap:20px;overflow-x:auto;scroll-snap-type:x mandatory;
+  padding:6px 4px 22px;margin:0 -4px;-webkit-overflow-scrolling:touch;
+  scrollbar-width:thin;scrollbar-color:var(--border-glass) transparent;
+}
+.info-scroller::-webkit-scrollbar{height:6px}
+.info-scroller::-webkit-scrollbar-thumb{background:var(--border-glass);border-radius:6px}
+.info-card{
+  scroll-snap-align:start;flex:0 0 auto;width:250px;background:var(--bg-tertiary);
+  border:1px solid var(--border-glass);border-radius:var(--radius-lg);overflow:hidden;
+  display:flex;flex-direction:column;transition:border-color .2s,transform .2s var(--ease-spring);
+}
+.info-card:hover{border-color:rgba(232,163,61,.35);transform:translateY(-3px)}
+.info-card-img-btn{display:block;border:none;padding:0;background:var(--bg-primary);cursor:zoom-in;width:100%}
+.info-card-img-btn img{width:100%;aspect-ratio:9/16;object-fit:cover;display:block}
+.info-card-body{padding:16px 16px 18px;display:flex;flex-direction:column;gap:8px;flex:1}
+.info-badge{
+  font-family:var(--mono);font-size:9.5px;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--accent-orange);
+}
+.info-card-title{font-size:15px;font-weight:700;line-height:1.3}
+.info-card-blurb{font-size:12.5px;color:var(--text-muted);line-height:1.55;flex:1}
+.info-card-actions{display:flex;gap:8px;margin-top:6px}
+.info-btn{
+  font-family:var(--sans);font-size:12px;font-weight:600;border-radius:20px;padding:8px 14px;
+  border:1px solid var(--border-glass);background:transparent;color:var(--text-primary);
+  cursor:pointer;transition:border-color .2s,background .2s;flex:1;text-align:center;
+}
+.info-btn:hover{border-color:var(--accent-orange)}
+.info-btn.share{background:rgba(232,163,61,.1);border-color:rgba(232,163,61,.35);color:var(--accent-orange)}
+.info-scroll-nav{
+  display:none;align-items:center;justify-content:center;position:absolute;top:45%;
+  width:38px;height:38px;border-radius:50%;background:var(--bg-tertiary);
+  border:1px solid var(--border-glass);color:var(--text-primary);cursor:pointer;z-index:2;
+  font-size:16px;transition:border-color .2s,background .2s;
+}
+.info-scroll-nav:hover{border-color:var(--accent-orange);background:rgba(232,163,61,.1)}
+.info-scroll-nav.prev{left:-14px}
+.info-scroll-nav.next{right:-14px}
+@media (min-width:900px){.info-scroll-nav{display:flex}}
+
+/* Lightbox */
+.info-lightbox{
+  position:fixed;inset:0;background:rgba(5,5,8,.92);backdrop-filter:blur(6px);
+  z-index:1000;display:none;align-items:center;justify-content:center;padding:24px;
+}
+.info-lightbox.open{display:flex}
+.info-lightbox-inner{
+  max-width:480px;width:100%;max-height:92vh;display:flex;flex-direction:column;
+  background:var(--bg-tertiary);border:1px solid var(--border-glass);border-radius:var(--radius-lg);
+  overflow:hidden;
+}
+.info-lightbox-imgwrap{overflow-y:auto;background:var(--bg-primary);max-height:62vh}
+.info-lightbox-imgwrap img{width:100%;display:block}
+.info-lightbox-footer{padding:16px 18px 18px;display:flex;flex-direction:column;gap:10px}
+.info-lightbox-title{font-size:16px;font-weight:700}
+.info-lightbox-blurb{font-size:12.5px;color:var(--text-muted);line-height:1.5}
+.info-lightbox-actions{display:flex;gap:10px;margin-top:4px}
+.info-lightbox-close,.info-lightbox-nav{
+  position:absolute;top:16px;width:38px;height:38px;border-radius:50%;
+  background:rgba(20,20,28,.85);border:1px solid var(--border-glass);color:#fff;
+  cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;z-index:2;
+}
+.info-lightbox-close{right:16px}
+.info-lightbox-nav.prev{left:16px;top:50%}
+.info-lightbox-nav.next{right:16px;top:50%}
+
+/* Menú de compartir (fallback sin Web Share API) */
+.info-share-menu{
+  position:fixed;inset:0;background:rgba(5,5,8,.7);z-index:1100;display:none;
+  align-items:flex-end;justify-content:center;
+}
+.info-share-menu.open{display:flex}
+.info-share-panel{
+  width:100%;max-width:420px;background:var(--bg-tertiary);border:1px solid var(--border-glass);
+  border-radius:18px 18px 0 0;padding:20px 20px 28px;display:flex;flex-direction:column;gap:10px;
+}
+.info-share-panel h4{font-size:14px;margin-bottom:4px}
+.info-share-opt{
+  display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:10px;
+  border:1px solid var(--border-glass);background:var(--bg-primary);color:var(--text-primary);
+  text-decoration:none;font-size:13.5px;font-weight:600;cursor:pointer;
+}
+.info-share-opt:hover{border-color:var(--accent-orange)}
+.info-share-cancel{
+  margin-top:6px;text-align:center;font-size:12.5px;color:var(--text-dim);
+  background:none;border:none;cursor:pointer;padding:8px;
+}
+
 /* ── RETAILERS (pre-launch badges) ── */
 .retailers{display:flex;flex-wrap:wrap;gap:12px;margin-top:22px}
 .retailer{

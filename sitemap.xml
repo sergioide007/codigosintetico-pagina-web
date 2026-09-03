@@ -1,9 +1,95 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://codigosintetico.specsolid.com/</loc>
-    <lastmod>2026-09-01</lastmod>
+    <lastmod>2026-09-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://codigosintetico.specsolid.com/assets/infografias/social/chatbot-vs-agente.jpg</image:loc>
+      <image:title>Chatbot vs. Agente de IA — Código Sintético</image:title>
+      <image:caption>La diferencia que decide si tu sistema solo responde, o si realmente actúa.</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://codigosintetico.specsolid.com/assets/infografias/social/resumen-arquitectura-gobernanza.jpg</image:loc>
+      <image:title>Arquitectura y Gobernanza Agéntica — Código Sintético</image:title>
+      <image:caption>El mapa completo del libro en un solo póster: de la arquitectura a la gobernanza.</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://codigosintetico.specsolid.com/assets/infografias/social/ai-gateway-riesgo.jpg</image:loc>
+      <image:title>AI Gateways y Enrutamiento de Riesgo — Código Sintético</image:title>
+      <image:caption>No todas las tareas de un agente merecen el modelo más caro. Así se decide en milisegundos.</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://codigosintetico.specsolid.com/assets/infografias/social/arnes-guardrails.jpg</image:loc>
+      <image:title>Arnés Defensivo y Guardrails — Código Sintético</image:title>
+      <image:caption>Circuit breakers, presupuesto de tokens y salidas estructuradas: la defensa en profundidad de un agente en producción.</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://codigosintetico.specsolid.com/assets/infografias/social/solid-agentes.jpg</image:loc>
+      <image:title>SOLID para Agentes — Código Sintético</image:title>
+      <image:caption>SOLID tiene 20 años. Sigue siendo la mejor defensa contra un enjambre de agentes inmantenible.</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://codigosintetico.specsolid.com/assets/infografias/social/kafka-eventos.jpg</image:loc>
+      <image:title>Kafka y Eventos Agénticos — Código Sintético</image:title>
+      <image:caption>Si tus agentes se llaman por HTTP síncrono, no tienes un sistema multiagente — tienes fallos esperando ocurrir.</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://codigosintetico.specsolid.com/assets/infografias/social/spec-driven-7-pasos.jpg</image:loc>
+      <image:title>El Flujo de Trabajo de 7 Pasos — Código Sintético</image:title>
+      <image:caption>La alternativa real al vibe-coding: especificación rigurosa en cada paso, del problema al despliegue.</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://codigosintetico.specsolid.com/assets/infografias/social/orquestacion-multiagente.jpg</image:loc>
+      <image:title>Patrones de Orquestación Multiagente — Código Sintético</image:title>
+      <image:caption>Jerárquica, peer-to-peer o swarm: elegir mal la topología es el error más caro de revertir.</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://codigosintetico.specsolid.com/assets/infografias/social/memoria-agentica.jpg</image:loc>
+      <image:title>Arquitectura de Memoria Agéntica — Código Sintético</image:title>
+      <image:caption>Memoria de trabajo, corto plazo y largo plazo: así se le construye memoria real a un agente.</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://codigosintetico.specsolid.com/assets/infografias/social/resiliencia-fallbacks.jpg</image:loc>
+      <image:title>Resiliencia Operativa y Fallbacks — Código Sintético</image:title>
+      <image:caption>Un agente en bucle infinito no es un bug gracioso — es una factura de miles de dólares.</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://codigosintetico.specsolid.com/assets/infografias/social/evaluacion-probabilistica-tdd.jpg</image:loc>
+      <image:title>Evaluación Probabilística y TDD — Código Sintético</image:title>
+      <image:caption>El testing tradicional asume que 2+2 siempre da 4. Un agente de IA necesita su propio TDD.</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://codigosintetico.specsolid.com/assets/infografias/social/observabilidad-evals-e2e.jpg</image:loc>
+      <image:title>Observabilidad y Evals E2E — Código Sintético</image:title>
+      <image:caption>Si no puedes medir por qué tu agente decidió algo, no tienes producción — tienes una caja negra.</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://codigosintetico.specsolid.com/assets/infografias/social/finops-optimizacion-costos.jpg</image:loc>
+      <image:title>FinOps en IA: Optimización de Costos — Código Sintético</image:title>
+      <image:caption>El 'silent token burn' es el enemigo silencioso. Reducir el TCO en 45% es posible sin tocar la calidad.</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://codigosintetico.specsolid.com/assets/infografias/social/seguridad-gobernanza.jpg</image:loc>
+      <image:title>Seguridad y Gobernanza — Código Sintético</image:title>
+      <image:caption>La inyección de prompts no es ciencia ficción: es el vector de ataque #1 en sistemas agénticos hoy.</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://codigosintetico.specsolid.com/assets/infografias/social/mcp-integracion-tools.jpg</image:loc>
+      <image:title>Protocolo MCP e Integración de Tools — Código Sintético</image:title>
+      <image:caption>Conectar un LLM directo a tu base de datos de producción es la forma más rápida de tener un mal día.</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://codigosintetico.specsolid.com/assets/infografias/social/mapa-carrera-ai-engineer.jpg</image:loc>
+      <image:title>El Mapa de Carrera: AI Engineer — Código Sintético</image:title>
+      <image:caption>El 'Prompt Engineer' de 2023 no es el mismo rol en 2026. Las 7 competencias clave, en un mapa.</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://codigosintetico.specsolid.com/assets/infografias/social/super-razonamiento-enjambres.jpg</image:loc>
+      <image:title>Súper-Razonamiento y Enjambres — Código Sintético</image:title>
+      <image:caption>El siguiente salto no es un modelo más grande. Es un enjambre que se corrige a sí mismo.</image:caption>
+    </image:image>
   </url>
 </urlset>

@@ -149,4 +149,5 @@ document.addEventListener('DOMContentLoaded', () => {
   initScrollReveal();
   initSubscribeForm();
   initVideoShare();
+  initInfografias();
 });
