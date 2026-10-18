@@ -471,3 +471,28 @@ a.retailer.live:hover{border-color:var(--accent-orange);transform:translateY(-2p
   *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
   .reveal{opacity:1;transform:none}
 }
+
+
+/* ── Siguientes pasos: serie abierta en books.specsolid.com ── */
+.hero-open{margin-top:18px;font-size:14px}
+.hero-open a{color:var(--accent-orange);text-decoration:underline;text-underline-offset:3px}
+.vol-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px;margin-top:8px}
+.vol-card{display:flex;flex-direction:column;gap:14px;padding:20px;background:var(--bg-primary);
+  border:1px solid var(--border-glass);border-radius:var(--radius-lg)}
+.vol-card img{width:112px;height:auto;aspect-ratio:2/3;border-radius:6px;box-shadow:0 8px 24px rgba(0,0,0,.45)}
+.vol-num{font-family:var(--mono);font-size:11.5px;letter-spacing:.04em;color:var(--accent-orange);text-transform:uppercase}
+.vol-meta h3{font-family:var(--display);font-size:18px;line-height:1.25;margin:6px 0}
+.vol-meta h3 span{color:var(--text-muted);font-weight:500;font-size:14px}
+.vol-meta p{font-size:13.5px;color:var(--text-muted);line-height:1.55}
+.vol-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:auto}
+.vol-cta{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:32px}
+.vol-note{max-width:760px;margin:20px auto 0;text-align:center;font-size:13px;color:var(--text-muted);line-height:1.6}
+.vol-note a{color:var(--accent-orange)}
+
+/* Móvil: el botón «SpecSolid ↗» + «Comprar ahora» + marca desbordaban 390 px (scroll horizontal) */
+@media(max-width:560px){
+  .nav-cta .btn-outline{display:none}
+  .nav-cta .btn{white-space:nowrap}
+  .book-cover-glow{max-width:100%}
+  html,body{overflow-x:clip}
+}
