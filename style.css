@@ -215,6 +215,8 @@ h1,h2,h3{font-family:var(--display);font-weight:700;letter-spacing:-.02em;color:
   background:var(--bg-primary);color:var(--text-primary);font-size:.95rem;font-family:inherit;
 }
 .subscribe-row input:focus,.subscribe-row select:focus{outline:none;border-color:var(--accent-orange)}
+.subscribe-row #sub-lang{flex:0 1 150px;min-width:130px}
+@media (max-width:560px){.subscribe-row #sub-lang{flex:1 1 100%}}
 .subscribe-honeypot{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
 .subscribe-submit{align-self:center;margin-top:.4rem;cursor:pointer}
 .subscribe-submit:disabled{opacity:.6;cursor:not-allowed}

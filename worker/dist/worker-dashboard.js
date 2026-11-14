@@ -4,6 +4,9 @@
  * archivos en runtime, así que no se pueden leer .html sueltos — se bundean
  * como strings). Los estilos van inline porque muchos clientes de correo
  * (Gmail, Outlook) ignoran <style> en el <head>.
+ *
+ * Dos idiomas: "es" (Código Sintético) y "en" (Synthetic Code, la edición en
+ * inglés). Cada suscriptor recibe toda la secuencia en el idioma que eligió.
  */
 
 function escapeHtml(str) {
@@ -13,213 +16,241 @@ function escapeHtml(str) {
     .replace(/>/g, "&gt;");
 }
 
+const LANGS = ["es", "en"];
+const normLang = (lang) => (LANGS.includes(lang) ? lang : "es");
+
 const CHAPTER_LABELS = {
   cap1: "Capítulo 1 — El despertar agéntico",
   cap2: "Capítulo 2 — El AI Engineer",
   cap3: "Capítulo 3 — Platform Engineering en la era agéntica",
 };
 
-function chapterEmailHtml({ name, chapterKey, downloadUrl }) {
-  const safeName = escapeHtml(name) || "";
-  const chapterLabel = CHAPTER_LABELS[chapterKey] || CHAPTER_LABELS.cap1;
-  const greeting = safeName ? `Hola ${safeName},` : "Hola,";
+const CHAPTER_LABELS_EN = {
+  cap1: "Chapter 1 — The Agentic Awakening",
+  cap2: "Chapter 2 — The AI Engineer",
+  cap3: "Chapter 3 — Platform Engineering in the Agentic Era",
+};
 
-  return `<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Código Sintético — ${escapeHtml(chapterLabel)}</title>
-</head>
-<body style="margin:0; padding:0; background-color:#0d0d12; font-family:Arial, Helvetica, sans-serif;">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#0d0d12; padding:32px 16px;">
-    <tr>
-      <td align="center">
-        <table role="presentation" width="100%" style="max-width:560px; background-color:#15151d; border:1px solid #2a2a35; border-radius:14px; overflow:hidden;">
-
-          <tr>
-            <td style="padding:32px 32px 8px; text-align:center;">
-              <div style="font-family:Arial, sans-serif; font-size:22px; font-weight:800; letter-spacing:1px; color:#ffffff;">
-                C&Oacute;DIGO <span style="color:#e8a33d;">SINT&Eacute;TICO</span>
-              </div>
-              <div style="height:1px; background-color:#e8a33d; margin:20px auto; width:64px;"></div>
-            </td>
-          </tr>
-
-          <tr>
-            <td style="padding:0 32px 8px; color:#e8e8ec; font-size:16px; line-height:1.6;">
-              <p style="margin:0 0 16px;">${greeting}</p>
-              <p style="margin:0 0 16px;">
-                Gracias por suscribirte. Aquí tienes tu enlace de descarga para
-                <strong style="color:#ffffff;">${escapeHtml(chapterLabel)}</strong>,
-                directo de <em>Código Sintético: El arte de orquestar agentes de IA</em>.
-              </p>
-            </td>
-          </tr>
-
-          <tr>
-            <td style="padding:8px 32px 24px; text-align:center;">
-              <a href="${escapeHtml(downloadUrl)}"
-                 style="display:inline-block; background-color:#e8a33d; color:#15151d; text-decoration:none;
-                        font-weight:700; font-size:15px; padding:14px 28px; border-radius:8px;">
-                Descargar capítulo
-              </a>
-              <p style="margin:14px 0 0; font-size:12px; color:#8a8a96;">
-                El enlace expira en 7 días por seguridad.
-              </p>
-            </td>
-          </tr>
-
-          <tr>
-            <td style="padding:0 32px 24px; color:#c5c5cf; font-size:14px; line-height:1.6;">
-              <p style="margin:0 0 12px;">
-                Si quieres ver el código real detrás de los patrones del libro funcionando en vivo,
-                el repositorio de referencia es público:
-              </p>
-              <p style="margin:0;">
-                <a href="https://github.com/sergioide007/synthetic-code" style="color:#e8a33d; text-decoration:none;">
-                  github.com/sergioide007/synthetic-code
-                </a>
-              </p>
-            </td>
-          </tr>
-
-          <tr>
-            <td style="padding:20px 32px; border-top:1px solid #2a2a35; text-align:center;">
-              <p style="margin:0 0 6px; font-size:13px; color:#8a8a96;">Sergio Perez Ruiz — SpecSolid Press</p>
-              <p style="margin:0; font-size:12px; color:#65656f;">
-                Recibiste este correo porque te suscribiste en codigosintetico.specsolid.com.
-                <a href="{{unsubscribeUrl}}" style="color:#8a8a96;">Darme de baja</a>
-              </p>
-            </td>
-          </tr>
-
-        </table>
-      </td>
-    </tr>
-  </table>
-</body>
-</html>`;
+function chapterLabel(chapterKey, lang) {
+  const labels = normLang(lang) === "en" ? CHAPTER_LABELS_EN : CHAPTER_LABELS;
+  return labels[chapterKey] || labels.cap1;
 }
 
-function day3FollowUpHtml({ name, chapterKey, unsubscribeUrl }) {
-  const safeName = escapeHtml(name) || "";
-  const greeting = safeName ? `Hola ${safeName},` : "Hola,";
-  const readLabel = CHAPTER_LABELS[chapterKey] || CHAPTER_LABELS.cap1;
+const SUBJECTS = {
+  es: {
+    chapter: "Tu capítulo de Código Sintético está listo",
+    day3: "¿Qué te pareció el capítulo? — Código Sintético",
+    day7: "Código Sintético ya está disponible",
+  },
+  en: {
+    chapter: "Your Synthetic Code chapter is ready",
+    day3: "How was the chapter? — Synthetic Code",
+    day7: "Synthetic Code is out now",
+  },
+};
 
+function subjectFor(kind, lang) {
+  return SUBJECTS[normLang(lang)][kind];
+}
+
+const COMMON = {
+  es: {
+    brand: "C&Oacute;DIGO <span style=\"color:#e8a33d;\">SINT&Eacute;TICO</span>",
+    hello: (n) => (n ? `Hola ${n},` : "Hola,"),
+    why: "Recibiste este correo porque te suscribiste en codigosintetico.specsolid.com.",
+    unsub: "Darme de baja",
+  },
+  en: {
+    brand: "SYNTHETIC <span style=\"color:#e8a33d;\">CODE</span>",
+    hello: (n) => (n ? `Hi ${n},` : "Hi,"),
+    why: "You received this email because you subscribed at codigosintetico.specsolid.com.",
+    unsub: "Unsubscribe",
+  },
+};
+
+const A = "color:#e8a33d; text-decoration:none;";
+const BTN = `display:inline-block; background-color:#e8a33d; color:#15151d; text-decoration:none;
+                    font-weight:700; font-size:15px; padding:14px 28px; border-radius:8px;`;
+const REPO = `<a href="https://github.com/sergioide007/synthetic-code" style="${A}">github.com/sergioide007/synthetic-code</a>`;
+
+// Marco común de los tres correos: cabecera con la marca, cuerpo y pie con la baja.
+function layout({ lang, title, body, unsubscribeUrl }) {
+  const c = COMMON[lang];
   return `<!DOCTYPE html>
-<html lang="es">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Código Sintético — ¿qué te pareció?</title></head>
+<html lang="${lang}">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>${title}</title></head>
 <body style="margin:0; padding:0; background-color:#0d0d12; font-family:Arial, Helvetica, sans-serif;">
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#0d0d12; padding:32px 16px;">
     <tr><td align="center">
       <table role="presentation" width="100%" style="max-width:560px; background-color:#15151d; border:1px solid #2a2a35; border-radius:14px; overflow:hidden;">
         <tr><td style="padding:32px 32px 8px; text-align:center;">
           <div style="font-family:Arial, sans-serif; font-size:22px; font-weight:800; letter-spacing:1px; color:#ffffff;">
-            C&Oacute;DIGO <span style="color:#e8a33d;">SINT&Eacute;TICO</span>
+            ${c.brand}
           </div>
           <div style="height:1px; background-color:#e8a33d; margin:20px auto; width:64px;"></div>
         </td></tr>
-        <tr><td style="padding:0 32px 8px; color:#e8e8ec; font-size:16px; line-height:1.6;">
-          <p style="margin:0 0 16px;">${greeting}</p>
-          <p style="margin:0 0 16px;">
-            Hace unos días te llegó <strong style="color:#ffffff;">${escapeHtml(readLabel)}</strong>.
-            Si ya lo leíste, esto es lo que sigue en el libro:
+${body}
+        <tr><td style="padding:20px 32px; border-top:1px solid #2a2a35; text-align:center;">
+          <p style="margin:0 0 6px; font-size:13px; color:#8a8a96;">Sergio Perez Ruiz — SpecSolid Press</p>
+          <p style="margin:0; font-size:12px; color:#65656f;">
+            ${c.why}
+            <a href="${unsubscribeUrl}" style="color:#8a8a96;">${c.unsub}</a>
           </p>
-          <p style="margin:0 0 8px; color:#c5c5cf;">
-            <strong style="color:#e8a33d;">21 capítulos</strong> que van desde el despertar
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+}
+
+const textRow = (inner) => `        <tr><td style="padding:0 32px 8px; color:#e8e8ec; font-size:16px; line-height:1.6;">
+${inner}
+        </td></tr>`;
+const buttonRow = (href, label, note) => `        <tr><td style="padding:8px 32px 24px; text-align:center;">
+          <a href="${escapeHtml(href)}" style="${BTN}">${label}</a>${note ? `
+          <p style="margin:14px 0 0; font-size:12px; color:#8a8a96;">${note}</p>` : ""}
+        </td></tr>`;
+const smallRow = (inner) => `        <tr><td style="padding:0 32px 24px; color:#c5c5cf; font-size:14px; line-height:1.6;">
+${inner}
+        </td></tr>`;
+
+// Correo de bienvenida con el enlace de descarga. El enlace de baja se deja como
+// {{unsubscribeUrl}} y lo reemplaza handleSubscribe.
+function chapterEmailHtml({ name, chapterKey, downloadUrl, lang }) {
+  lang = normLang(lang);
+  const greeting = COMMON[lang].hello(escapeHtml(name));
+  const label = escapeHtml(chapterLabel(chapterKey, lang));
+  const t = lang === "en"
+    ? {
+        intro: `Thanks for subscribing. Here is your download link for
+            <strong style="color:#ffffff;">${label}</strong>,
+            straight from <em>Synthetic Code: The Art of Orchestrating AI Agents</em>.`,
+        btn: "Download the chapter",
+        note: "For security, the link expires in 7 days.",
+        repo: "Want to see the real code behind the book's patterns running live? The reference repository is public:",
+      }
+    : {
+        intro: `Gracias por suscribirte. Aquí tienes tu enlace de descarga para
+            <strong style="color:#ffffff;">${label}</strong>,
+            directo de <em>Código Sintético: El arte de orquestar agentes de IA</em>.`,
+        btn: "Descargar capítulo",
+        note: "El enlace expira en 7 días por seguridad.",
+        repo: "Si quieres ver el código real detrás de los patrones del libro funcionando en vivo, el repositorio de referencia es público:",
+      };
+
+  const body = [
+    textRow(`          <p style="margin:0 0 16px;">${greeting}</p>
+          <p style="margin:0 0 16px;">
+            ${t.intro}
+          </p>`),
+    buttonRow(downloadUrl, t.btn, t.note),
+    smallRow(`          <p style="margin:0 0 12px;">${t.repo}</p>
+          <p style="margin:0;">${REPO}</p>`),
+  ].join("\n");
+
+  const title = lang === "en" ? `Synthetic Code — ${label}` : `Código Sintético — ${label}`;
+  return layout({ lang, title, body, unsubscribeUrl: "{{unsubscribeUrl}}" });
+}
+
+function day3FollowUpHtml({ name, chapterKey, unsubscribeUrl, lang }) {
+  lang = normLang(lang);
+  const greeting = COMMON[lang].hello(escapeHtml(name));
+  const label = escapeHtml(chapterLabel(chapterKey, lang));
+  const t = lang === "en"
+    ? {
+        title: "Synthetic Code — how was it?",
+        p1: `A few days ago you received <strong style="color:#ffffff;">${label}</strong>.
+            If you've read it, here's what comes next in the book:`,
+        p2: `<strong style="color:#e8a33d;">29 chapters</strong> that run from the agentic
+            awakening to security in multi-agent systems, real cost optimization, and
+            geopolitics as an architectural constraint — with runnable reference code for
+            every core pattern.`,
+        href: "https://info-codigo-sintetico.specsolid.com/en/#read",
+        btn: "Read a sample and see all chapters",
+        repo: `And if you want to see the real code behind the patterns running live: ${REPO}`,
+      }
+    : {
+        title: "Código Sintético — ¿qué te pareció?",
+        p1: `Hace unos días te llegó <strong style="color:#ffffff;">${label}</strong>.
+            Si ya lo leíste, esto es lo que sigue en el libro:`,
+        p2: `<strong style="color:#e8a33d;">21 capítulos</strong> que van desde el despertar
             agéntico hasta la seguridad en sistemas multiagente, la optimización real de
             costos y la geopolítica como restricción arquitectónica — con código de
-            referencia ejecutable para cada patrón central.
+            referencia ejecutable para cada patrón central.`,
+        href: "https://codigosintetico.specsolid.com/#capitulos",
+        btn: "Ver el índice completo",
+        repo: `Y si quieres ver el código real detrás de los patrones funcionando en vivo: ${REPO}`,
+      };
+
+  const body = [
+    textRow(`          <p style="margin:0 0 16px;">${greeting}</p>
+          <p style="margin:0 0 16px;">
+            ${t.p1}
           </p>
-        </td></tr>
-        <tr><td style="padding:8px 32px 24px; text-align:center;">
-          <a href="https://codigosintetico.specsolid.com/#capitulos"
-             style="display:inline-block; background-color:#e8a33d; color:#15151d; text-decoration:none;
-                    font-weight:700; font-size:15px; padding:14px 28px; border-radius:8px;">
-            Ver el índice completo
-          </a>
-        </td></tr>
-        <tr><td style="padding:0 32px 24px; color:#c5c5cf; font-size:14px; line-height:1.6;">
-          <p style="margin:0;">
-            Y si quieres ver el código real detrás de los patrones funcionando en vivo:
-            <a href="https://github.com/sergioide007/synthetic-code" style="color:#e8a33d; text-decoration:none;">
-              github.com/sergioide007/synthetic-code
-            </a>
-          </p>
-        </td></tr>
-        <tr><td style="padding:20px 32px; border-top:1px solid #2a2a35; text-align:center;">
-          <p style="margin:0 0 6px; font-size:13px; color:#8a8a96;">Sergio Perez Ruiz — SpecSolid Press</p>
-          <p style="margin:0; font-size:12px; color:#65656f;">
-            Recibiste este correo porque te suscribiste en codigosintetico.specsolid.com.
-            <a href="${escapeHtml(unsubscribeUrl)}" style="color:#8a8a96;">Darme de baja</a>
-          </p>
-        </td></tr>
-      </table>
-    </td></tr>
-  </table>
-</body>
-</html>`;
+          <p style="margin:0 0 8px; color:#c5c5cf;">
+            ${t.p2}
+          </p>`),
+    buttonRow(t.href, t.btn),
+    smallRow(`          <p style="margin:0;">
+            ${t.repo}
+          </p>`),
+  ].join("\n");
+
+  return layout({ lang, title: t.title, body, unsubscribeUrl: escapeHtml(unsubscribeUrl) });
 }
 
-function day7FollowUpHtml({ name, unsubscribeUrl }) {
-  const safeName = escapeHtml(name) || "";
-  const greeting = safeName ? `Hola ${safeName},` : "Hola,";
-
-  return `<!DOCTYPE html>
-<html lang="es">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Código Sintético — antes de que se te pase</title></head>
-<body style="margin:0; padding:0; background-color:#0d0d12; font-family:Arial, Helvetica, sans-serif;">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#0d0d12; padding:32px 16px;">
-    <tr><td align="center">
-      <table role="presentation" width="100%" style="max-width:560px; background-color:#15151d; border:1px solid #2a2a35; border-radius:14px; overflow:hidden;">
-        <tr><td style="padding:32px 32px 8px; text-align:center;">
-          <div style="font-family:Arial, sans-serif; font-size:22px; font-weight:800; letter-spacing:1px; color:#ffffff;">
-            C&Oacute;DIGO <span style="color:#e8a33d;">SINT&Eacute;TICO</span>
-          </div>
-          <div style="height:1px; background-color:#e8a33d; margin:20px auto; width:64px;"></div>
-        </td></tr>
-        <tr><td style="padding:0 32px 8px; color:#e8e8ec; font-size:16px; line-height:1.6;">
-          <p style="margin:0 0 16px;">${greeting}</p>
-          <p style="margin:0 0 16px;">
-            "La ingeniería de software no desaparece con los agentes. Evoluciona."
+function day7FollowUpHtml({ name, unsubscribeUrl, lang }) {
+  lang = normLang(lang);
+  const greeting = COMMON[lang].hello(escapeHtml(name));
+  const t = lang === "en"
+    ? {
+        title: "Synthetic Code — before it slips by",
+        p1: `"Software engineering doesn't disappear with agents. It evolves."
+            — that's the premise of <em>Synthetic Code</em>, and the reason you subscribed.`,
+        p2: `As promised, you hear it first: the complete edition is available on Amazon as a
+            <a href="https://www.amazon.com/dp/B0HRMZ15PV" style="${A}">Kindle eBook</a>,
+            <a href="https://www.amazon.com/dp/B0HRNT2QLQ" style="${A}">paperback</a>, and
+            <a href="https://www.amazon.com/dp/B0HRP4TT9D" style="${A}">hardcover</a>,
+            updated with the November 2026 models.`,
+        p3: `Prefer Spanish? The original edition, <em>Código Sintético</em>, is available too:
+            <a href="https://codigosintetico.specsolid.com/#comprar" style="${A}">see the stores</a>.`,
+        href: "https://www.amazon.com/dp/B0HRMZ15PV",
+        btn: "Get Synthetic Code on Amazon",
+        note: "Kindle $9.99 · paperback $24.99 · hardcover $34.99 (USD)",
+      }
+    : {
+        title: "Código Sintético — antes de que se te pase",
+        p1: `"La ingeniería de software no desaparece con los agentes. Evoluciona."
             — es la premisa de <em>Código Sintético</em>, y la razón por la que te
-            suscribiste.
-          </p>
-          <p style="margin:0 0 16px; color:#c5c5cf;">
-            Te lo prometimos: lo sabes primero. La edición completa ya está disponible en
-            Amazon en <a href="https://www.amazon.com/dp/B0HG96Y1LN" style="color:#e8a33d; text-decoration:none;">Kindle</a>,
-            <a href="https://www.amazon.com/dp/B0HGFD1Y6G" style="color:#e8a33d; text-decoration:none;">tapa blanda</a> y
-            <a href="https://www.amazon.com/dp/B0HGGH9P77" style="color:#e8a33d; text-decoration:none;">tapa dura</a>.
-          </p>
-          <p style="margin:0 0 16px; color:#c5c5cf;">
-            ¿Lees en inglés? También está la edición en inglés, <em>Synthetic Code</em>,
+            suscribiste.`,
+        p2: `Te lo prometimos: lo sabes primero. La edición completa ya está disponible en
+            Amazon en <a href="https://www.amazon.com/dp/B0HG96Y1LN" style="${A}">Kindle</a>,
+            <a href="https://www.amazon.com/dp/B0HGFD1Y6G" style="${A}">tapa blanda</a> y
+            <a href="https://www.amazon.com/dp/B0HGGH9P77" style="${A}">tapa dura</a>.`,
+        p3: `¿Lees en inglés? También está la edición en inglés, <em>Synthetic Code</em>,
             actualizada con los modelos de noviembre de 2026:
-            <a href="https://www.amazon.com/dp/B0HRMZ15PV" style="color:#e8a33d; text-decoration:none;">verla en Amazon</a>.
+            <a href="https://www.amazon.com/dp/B0HRMZ15PV" style="${A}">verla en Amazon</a>.`,
+        href: "https://codigosintetico.specsolid.com/#comprar",
+        btn: "Ver todas las tiendas",
+        note: "Amazon, Lulu, Apple Books, Kobo, Gumroad (PDF) y más.",
+      };
+
+  const body = [
+    textRow(`          <p style="margin:0 0 16px;">${greeting}</p>
+          <p style="margin:0 0 16px;">
+            ${t.p1}
           </p>
-        </td></tr>
-        <tr><td style="padding:8px 32px 24px; text-align:center;">
-          <a href="https://codigosintetico.specsolid.com/#comprar"
-             style="display:inline-block; background-color:#e8a33d; color:#15151d; text-decoration:none;
-                    font-weight:700; font-size:15px; padding:14px 28px; border-radius:8px;">
-            Ver todas las tiendas
-          </a>
-          <p style="margin:14px 0 0; font-size:12px; color:#8a8a96;">
-            Amazon, Lulu, Apple Books, Kobo, Gumroad (PDF) y más.
+          <p style="margin:0 0 16px; color:#c5c5cf;">
+            ${t.p2}
           </p>
-        </td></tr>
-        <tr><td style="padding:20px 32px; border-top:1px solid #2a2a35; text-align:center;">
-          <p style="margin:0 0 6px; font-size:13px; color:#8a8a96;">Sergio Perez Ruiz — SpecSolid Press</p>
-          <p style="margin:0; font-size:12px; color:#65656f;">
-            Recibiste este correo porque te suscribiste en codigosintetico.specsolid.com.
-            <a href="${escapeHtml(unsubscribeUrl)}" style="color:#8a8a96;">Darme de baja</a>
-          </p>
-        </td></tr>
-      </table>
-    </td></tr>
-  </table>
-</body>
-</html>`;
+          <p style="margin:0 0 16px; color:#c5c5cf;">
+            ${t.p3}
+          </p>`),
+    buttonRow(t.href, t.btn, t.note),
+  ].join("\n");
+
+  return layout({ lang, title: t.title, body, unsubscribeUrl: escapeHtml(unsubscribeUrl) });
 }
 
 
@@ -278,17 +309,22 @@ async function hmacHex(secret, message) {
 // Solo alguien con la firma correcta (generada aquí, tras pasar Turnstile)
 // puede descargar, y el enlace deja de servir pasado ese tiempo.
 const CHAPTER_OBJECT_KEYS = {
-  cap1: "capitulo-1.pdf",
-  cap2: "capitulo-2.pdf",
-  cap3: "capitulo-3.pdf",
+  es: { cap1: "capitulo-1.pdf", cap2: "capitulo-2.pdf", cap3: "capitulo-3.pdf" },
+  en: { cap1: "chapter-1-en.pdf", cap2: "chapter-2-en.pdf", cap3: "chapter-3-en.pdf" },
 };
+
+// Lo que se firma. En español queda el formato original, para que los enlaces ya enviados
+// (válidos 7 días) sigan funcionando; en inglés el idioma entra en la firma.
+const downloadSigMessage = (chapterKey, lang, email, exp) =>
+  lang === "en" ? `${chapterKey}:en:${email}:${exp}` : `${chapterKey}:${email}:${exp}`;
 
 const DOWNLOAD_TTL_SECONDS = 7 * 24 * 60 * 60; // 7 días, como promete el email
 
-async function buildDownloadUrl(request, env, chapterKey, email) {
+async function buildDownloadUrl(request, env, chapterKey, email, lang) {
   const exp = Math.floor(Date.now() / 1000) + DOWNLOAD_TTL_SECONDS;
-  const sig = await hmacHex(env.DOWNLOAD_SECRET, `${chapterKey}:${email}:${exp}`);
+  const sig = await hmacHex(env.DOWNLOAD_SECRET, downloadSigMessage(chapterKey, lang, email, exp));
   const params = new URLSearchParams({ chapter: chapterKey, email, exp: String(exp), sig });
+  if (lang === "en") params.set("lang", "en");
   return `${new URL(request.url).origin}/download?${params.toString()}`;
 }
 
@@ -298,28 +334,37 @@ async function handleDownload(request, env) {
   const email = url.searchParams.get("email") || "";
   const expStr = url.searchParams.get("exp") || "";
   const sig = url.searchParams.get("sig") || "";
+  const lang = normLang(url.searchParams.get("lang"));
+  const en = lang === "en";
 
-  const objectKey = CHAPTER_OBJECT_KEYS[chapterKey];
+  const objectKey = CHAPTER_OBJECT_KEYS[lang][chapterKey];
   if (!objectKey || !email || !expStr || !sig) {
-    return new Response("Enlace inválido.", { status: 400 });
+    return new Response(en ? "Invalid link." : "Enlace inválido.", { status: 400 });
   }
 
   const exp = parseInt(expStr, 10);
   if (!Number.isFinite(exp) || Date.now() / 1000 > exp) {
     return new Response(
-      "Este enlace de descarga expiró (los enlaces duran 7 días). Vuelve a suscribirte para recibir uno nuevo.",
+      en
+        ? "This download link has expired (links last 7 days). Write to sergio@specsolid.com and we'll send you a new one."
+        : "Este enlace de descarga expiró (los enlaces duran 7 días). Escríbenos a sergio@specsolid.com y te enviamos uno nuevo.",
       { status: 410, headers: { "Content-Type": "text/plain; charset=utf-8" } }
     );
   }
 
-  const expected = await hmacHex(env.DOWNLOAD_SECRET, `${chapterKey}:${email}:${exp}`);
+  const expected = await hmacHex(env.DOWNLOAD_SECRET, downloadSigMessage(chapterKey, lang, email, exp));
   if (!safeEqual(expected, sig)) {
-    return new Response("Enlace inválido o alterado.", { status: 403 });
+    return new Response(en ? "Invalid or tampered link." : "Enlace inválido o alterado.", { status: 403 });
   }
 
   const object = await env.CHAPTERS_BUCKET.get(objectKey);
   if (!object) {
-    return new Response("El archivo no está disponible por ahora. Contacta a soporte.", { status: 404 });
+    return new Response(
+      en
+        ? "The file is not available right now. Please write to sergio@specsolid.com."
+        : "El archivo no está disponible por ahora. Escríbenos a sergio@specsolid.com.",
+      { status: 404 }
+    );
   }
 
   return new Response(object.body, {
@@ -363,6 +408,16 @@ async function handleAdminStats(request, env) {
     )
     .all();
 
+  const byLang = await env.DB
+    .prepare(
+      `SELECT COALESCE(lang, 'es') AS lang, COUNT(*) AS count
+       FROM subscribers
+       WHERE status = 'active'
+       GROUP BY COALESCE(lang, 'es')`
+    )
+    .all()
+    .catch(() => null); // la columna `lang` aún no existe hasta la primera suscripción o corrida del cron
+
   const last7d = await env.DB
     .prepare(
       `SELECT COUNT(*) AS count FROM subscribers
@@ -396,6 +451,7 @@ async function handleAdminStats(request, env) {
         total: totals?.total || 0,
       },
       byChapter: byChapter?.results || [],
+      byLang: byLang?.results || [],
       last7Days: last7d?.count || 0,
       last30Days: last30d?.count || 0,
       signupsByDay: recentSignups?.results || [],
@@ -423,10 +479,12 @@ function safeEqual(a, b) {
   return diff === 0;
 }
 
-async function unsubscribeUrlFor(env, email, origin) {
+// `lang` no va firmado: solo decide en qué idioma se muestra la confirmación de baja.
+async function unsubscribeUrlFor(env, email, origin, lang) {
   const sig = await hmacHex(env.UNSUB_SECRET, email);
   const base = origin || env.WORKER_ORIGIN || DEFAULT_WORKER_ORIGIN;
-  return `${base}/unsubscribe?email=${encodeURIComponent(email)}&sig=${sig}`;
+  const langParam = lang === "en" ? "&lang=en" : "";
+  return `${base}/unsubscribe?email=${encodeURIComponent(email)}&sig=${sig}${langParam}`;
 }
 
 async function sendBrevoEmail(env, { toEmail, toName, subject, html, unsubscribeUrl }) {
@@ -461,16 +519,21 @@ async function sendBrevoEmail(env, { toEmail, toName, subject, html, unsubscribe
 // La tabla se creó en la Iteración 1 sin day3_sent_at / day7_sent_at, y `CREATE TABLE IF NOT EXISTS`
 // no agrega columnas a una tabla que ya existe: sin esto, la secuencia fallaba con "no such column"
 // en cada corrida del cron, sin dejar rastro (los logs del Worker estaban desactivados).
+// `lang` llegó con la edición en inglés: los suscriptores anteriores quedan en NULL = español.
+// Se recuerda por instancia del Worker para no repetir el PRAGMA en cada suscripción.
+let columnsChecked = false;
 async function ensureFollowUpColumns(env) {
+  if (columnsChecked) return [];
   const info = await env.DB.prepare("PRAGMA table_info(subscribers)").all();
   const cols = new Set((info?.results || []).map((c) => c.name));
   const added = [];
-  for (const col of ["day3_sent_at", "day7_sent_at"]) {
+  for (const col of ["day3_sent_at", "day7_sent_at", "lang"]) {
     if (!cols.has(col)) {
       await env.DB.prepare(`ALTER TABLE subscribers ADD COLUMN ${col} TEXT`).run();
       added.push(col);
     }
   }
+  columnsChecked = true;
   return added;
 }
 
@@ -496,7 +559,7 @@ async function runFollowUpSequence(env, { dryRun = false } = {}) {
 
   const day3Due = await env.DB
     .prepare(
-      `SELECT id, email, name, chapter_selected FROM subscribers
+      `SELECT id, email, name, chapter_selected, lang FROM subscribers
        WHERE status = 'active'
          AND day3_sent_at IS NULL
          AND created_at <= datetime('now', '-3 days')
@@ -510,16 +573,17 @@ async function runFollowUpSequence(env, { dryRun = false } = {}) {
 
   for (const sub of day3Due?.results || []) {
     if (dryRun) {
-      results.preview.push(`day3:${maskEmail(sub.email)}`);
+      results.preview.push(`day3:${normLang(sub.lang)}:${maskEmail(sub.email)}`);
       continue;
     }
     try {
-      const unsubUrl = await unsubscribeUrlFor(env, sub.email);
-      const html = day3FollowUpHtml({ name: sub.name, chapterKey: sub.chapter_selected, unsubscribeUrl: unsubUrl });
+      const lang = normLang(sub.lang);
+      const unsubUrl = await unsubscribeUrlFor(env, sub.email, null, lang);
+      const html = day3FollowUpHtml({ name: sub.name, chapterKey: sub.chapter_selected, unsubscribeUrl: unsubUrl, lang });
       await sendBrevoEmail(env, {
         toEmail: sub.email,
         toName: sub.name,
-        subject: "¿Qué te pareció el capítulo? — Código Sintético",
+        subject: subjectFor("day3", lang),
         html,
         unsubscribeUrl: unsubUrl,
       });
@@ -535,7 +599,7 @@ async function runFollowUpSequence(env, { dryRun = false } = {}) {
 
   const day7Due = await env.DB
     .prepare(
-      `SELECT id, email, name FROM subscribers
+      `SELECT id, email, name, lang FROM subscribers
        WHERE status = 'active'
          AND day7_sent_at IS NULL
          AND created_at <= datetime('now', '-7 days')
@@ -552,16 +616,17 @@ async function runFollowUpSequence(env, { dryRun = false } = {}) {
 
   for (const sub of day7Due?.results || []) {
     if (dryRun) {
-      results.preview.push(`day7:${maskEmail(sub.email)}`);
+      results.preview.push(`day7:${normLang(sub.lang)}:${maskEmail(sub.email)}`);
       continue;
     }
     try {
-      const unsubUrl = await unsubscribeUrlFor(env, sub.email);
-      const html = day7FollowUpHtml({ name: sub.name, unsubscribeUrl: unsubUrl });
+      const lang = normLang(sub.lang);
+      const unsubUrl = await unsubscribeUrlFor(env, sub.email, null, lang);
+      const html = day7FollowUpHtml({ name: sub.name, unsubscribeUrl: unsubUrl, lang });
       await sendBrevoEmail(env, {
         toEmail: sub.email,
         toName: sub.name,
-        subject: "Código Sintético ya está disponible",
+        subject: subjectFor("day7", lang),
         html,
         unsubscribeUrl: unsubUrl,
       });
@@ -601,6 +666,8 @@ async function handleSubscribe(request, env) {
   }
 
   const { name, email, chapter, turnstileToken, website } = payload;
+  const lang = normLang(payload.lang);
+  const en = lang === "en";
 
   // Honeypot: campo "website" debe llegar vacío. Si un bot lo rellena, lo
   // dejamos "aceptar" en apariencia (para no delatar el honeypot) pero no
@@ -610,7 +677,7 @@ async function handleSubscribe(request, env) {
   }
 
   if (!email || !EMAIL_RE.test(email)) {
-    return json({ ok: false, error: "Correo inválido." }, 400, cors);
+    return json({ ok: false, error: en ? "Invalid email address." : "Correo inválido." }, 400, cors);
   }
 
   const chapterKey = CHAPTER_LABELS[chapter] ? chapter : "cap1";
@@ -618,8 +685,10 @@ async function handleSubscribe(request, env) {
   const ip = request.headers.get("CF-Connecting-IP");
   const turnstileOk = await verifyTurnstile(turnstileToken, env.TURNSTILE_SECRET_KEY, ip);
   if (!turnstileOk) {
-    return json({ ok: false, error: "Verificación anti-spam fallida." }, 403, cors);
+    return json({ ok: false, error: en ? "Anti-spam check failed." : "Verificación anti-spam fallida." }, 403, cors);
   }
+
+  await ensureFollowUpColumns(env); // garantiza la columna `lang` antes de escribir al suscriptor
 
   // Upsert del suscriptor. Si ya existe y sigue activo, no reenviamos correo
   // (evita que alguien reciba el mismo capítulo repetidamente).
@@ -634,26 +703,26 @@ async function handleSubscribe(request, env) {
 
   if (existing) {
     await env.DB
-      .prepare("UPDATE subscribers SET status = 'active', name = ?, chapter_selected = ? WHERE email = ?")
-      .bind(name || null, chapterKey, email)
+      .prepare("UPDATE subscribers SET status = 'active', name = ?, chapter_selected = ?, lang = ? WHERE email = ?")
+      .bind(name || null, chapterKey, lang, email)
       .run();
   } else {
     await env.DB
       .prepare(
-        "INSERT INTO subscribers (email, name, chapter_selected, status) VALUES (?, ?, ?, 'active')"
+        "INSERT INTO subscribers (email, name, chapter_selected, lang, status) VALUES (?, ?, ?, ?, 'active')"
       )
-      .bind(email, name || null, chapterKey)
+      .bind(email, name || null, chapterKey, lang)
       .run();
   }
 
   // Enlace de descarga: apunta al propio Worker (/download), firmado con
   // HMAC y con expiración de 7 días embebida — el PDF real vive en un
   // bucket R2 privado, nunca se expone directamente.
-  const downloadUrl = await buildDownloadUrl(request, env, chapterKey, email);
+  const downloadUrl = await buildDownloadUrl(request, env, chapterKey, email, lang);
 
-  const unsubscribeUrl = await unsubscribeUrlFor(env, email, new URL(request.url).origin);
+  const unsubscribeUrl = await unsubscribeUrlFor(env, email, new URL(request.url).origin, lang);
 
-  const html = chapterEmailHtml({ name, chapterKey, downloadUrl }).replace(
+  const html = chapterEmailHtml({ name, chapterKey, downloadUrl, lang }).replace(
     "{{unsubscribeUrl}}",
     unsubscribeUrl
   );
@@ -662,7 +731,7 @@ async function handleSubscribe(request, env) {
     await sendBrevoEmail(env, {
       toEmail: email,
       toName: name,
-      subject: `Tu capítulo de Código Sintético está listo`,
+      subject: subjectFor("chapter", lang),
       html,
       unsubscribeUrl,
     });
@@ -670,7 +739,8 @@ async function handleSubscribe(request, env) {
     // El registro en D1 ya quedó guardado; devolvemos el error real de Brevo (como la v3 del
     // dashboard) para poder diagnosticar la causa exacta, y queda también en los logs.
     console.error("subscribe: Brevo rechazó el envío", err.message || err);
-    return json({ ok: false, error: `No se pudo enviar el correo: ${err.message || err}` }, 502, cors);
+    const prefix = en ? "The email could not be sent" : "No se pudo enviar el correo";
+    return json({ ok: false, error: `${prefix}: ${err.message || err}` }, 502, cors);
   }
 
   await env.DB
@@ -687,14 +757,15 @@ async function handleUnsubscribe(request, env) {
   const url = new URL(request.url);
   const email = url.searchParams.get("email") || "";
   const sig = url.searchParams.get("sig") || "";
+  const en = url.searchParams.get("lang") === "en";
 
   if (!email || !sig) {
-    return new Response("Enlace inválido.", { status: 400 });
+    return new Response(en ? "Invalid link." : "Enlace inválido.", { status: 400 });
   }
 
   const expected = await hmacHex(env.UNSUB_SECRET, email);
   if (!safeEqual(expected, sig)) {
-    return new Response("Enlace inválido o alterado.", { status: 403 });
+    return new Response(en ? "Invalid or tampered link." : "Enlace inválido o alterado.", { status: 403 });
   }
 
   await env.DB
@@ -703,7 +774,7 @@ async function handleUnsubscribe(request, env) {
     .run();
 
   return new Response(
-    "Listo, te dimos de baja. Puedes cerrar esta pestaña.",
+    en ? "Done, you've been unsubscribed. You can close this tab." : "Listo, te dimos de baja. Puedes cerrar esta pestaña.",
     { status: 200, headers: { "Content-Type": "text/plain; charset=utf-8" } }
   );
 }

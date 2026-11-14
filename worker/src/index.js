@@ -1,4 +1,4 @@
-import { chapterEmailHtml, day3FollowUpHtml, day7FollowUpHtml, CHAPTER_LABELS } from "./templates.js";
+import { chapterEmailHtml, day3FollowUpHtml, day7FollowUpHtml, subjectFor, normLang, CHAPTER_LABELS } from "./templates.js";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -55,17 +55,22 @@ async function hmacHex(secret, message) {
 // Solo alguien con la firma correcta (generada aquí, tras pasar Turnstile)
 // puede descargar, y el enlace deja de servir pasado ese tiempo.
 const CHAPTER_OBJECT_KEYS = {
-  cap1: "capitulo-1.pdf",
-  cap2: "capitulo-2.pdf",
-  cap3: "capitulo-3.pdf",
+  es: { cap1: "capitulo-1.pdf", cap2: "capitulo-2.pdf", cap3: "capitulo-3.pdf" },
+  en: { cap1: "chapter-1-en.pdf", cap2: "chapter-2-en.pdf", cap3: "chapter-3-en.pdf" },
 };
+
+// Lo que se firma. En español queda el formato original, para que los enlaces ya enviados
+// (válidos 7 días) sigan funcionando; en inglés el idioma entra en la firma.
+const downloadSigMessage = (chapterKey, lang, email, exp) =>
+  lang === "en" ? `${chapterKey}:en:${email}:${exp}` : `${chapterKey}:${email}:${exp}`;
 
 const DOWNLOAD_TTL_SECONDS = 7 * 24 * 60 * 60; // 7 días, como promete el email
 
-async function buildDownloadUrl(request, env, chapterKey, email) {
+async function buildDownloadUrl(request, env, chapterKey, email, lang) {
   const exp = Math.floor(Date.now() / 1000) + DOWNLOAD_TTL_SECONDS;
-  const sig = await hmacHex(env.DOWNLOAD_SECRET, `${chapterKey}:${email}:${exp}`);
+  const sig = await hmacHex(env.DOWNLOAD_SECRET, downloadSigMessage(chapterKey, lang, email, exp));
   const params = new URLSearchParams({ chapter: chapterKey, email, exp: String(exp), sig });
+  if (lang === "en") params.set("lang", "en");
   return `${new URL(request.url).origin}/download?${params.toString()}`;
 }
 
@@ -75,28 +80,37 @@ async function handleDownload(request, env) {
   const email = url.searchParams.get("email") || "";
   const expStr = url.searchParams.get("exp") || "";
   const sig = url.searchParams.get("sig") || "";
+  const lang = normLang(url.searchParams.get("lang"));
+  const en = lang === "en";
 
-  const objectKey = CHAPTER_OBJECT_KEYS[chapterKey];
+  const objectKey = CHAPTER_OBJECT_KEYS[lang][chapterKey];
   if (!objectKey || !email || !expStr || !sig) {
-    return new Response("Enlace inválido.", { status: 400 });
+    return new Response(en ? "Invalid link." : "Enlace inválido.", { status: 400 });
   }
 
   const exp = parseInt(expStr, 10);
   if (!Number.isFinite(exp) || Date.now() / 1000 > exp) {
     return new Response(
-      "Este enlace de descarga expiró (los enlaces duran 7 días). Vuelve a suscribirte para recibir uno nuevo.",
+      en
+        ? "This download link has expired (links last 7 days). Write to sergio@specsolid.com and we'll send you a new one."
+        : "Este enlace de descarga expiró (los enlaces duran 7 días). Escríbenos a sergio@specsolid.com y te enviamos uno nuevo.",
       { status: 410, headers: { "Content-Type": "text/plain; charset=utf-8" } }
     );
   }
 
-  const expected = await hmacHex(env.DOWNLOAD_SECRET, `${chapterKey}:${email}:${exp}`);
+  const expected = await hmacHex(env.DOWNLOAD_SECRET, downloadSigMessage(chapterKey, lang, email, exp));
   if (!safeEqual(expected, sig)) {
-    return new Response("Enlace inválido o alterado.", { status: 403 });
+    return new Response(en ? "Invalid or tampered link." : "Enlace inválido o alterado.", { status: 403 });
   }
 
   const object = await env.CHAPTERS_BUCKET.get(objectKey);
   if (!object) {
-    return new Response("El archivo no está disponible por ahora. Contacta a soporte.", { status: 404 });
+    return new Response(
+      en
+        ? "The file is not available right now. Please write to sergio@specsolid.com."
+        : "El archivo no está disponible por ahora. Escríbenos a sergio@specsolid.com.",
+      { status: 404 }
+    );
   }
 
   return new Response(object.body, {
@@ -140,6 +154,16 @@ async function handleAdminStats(request, env) {
     )
     .all();
 
+  const byLang = await env.DB
+    .prepare(
+      `SELECT COALESCE(lang, 'es') AS lang, COUNT(*) AS count
+       FROM subscribers
+       WHERE status = 'active'
+       GROUP BY COALESCE(lang, 'es')`
+    )
+    .all()
+    .catch(() => null); // la columna `lang` aún no existe hasta la primera suscripción o corrida del cron
+
   const last7d = await env.DB
     .prepare(
       `SELECT COUNT(*) AS count FROM subscribers
@@ -173,6 +197,7 @@ async function handleAdminStats(request, env) {
         total: totals?.total || 0,
       },
       byChapter: byChapter?.results || [],
+      byLang: byLang?.results || [],
       last7Days: last7d?.count || 0,
       last30Days: last30d?.count || 0,
       signupsByDay: recentSignups?.results || [],
@@ -200,10 +225,12 @@ function safeEqual(a, b) {
   return diff === 0;
 }
 
-async function unsubscribeUrlFor(env, email, origin) {
+// `lang` no va firmado: solo decide en qué idioma se muestra la confirmación de baja.
+async function unsubscribeUrlFor(env, email, origin, lang) {
   const sig = await hmacHex(env.UNSUB_SECRET, email);
   const base = origin || env.WORKER_ORIGIN || DEFAULT_WORKER_ORIGIN;
-  return `${base}/unsubscribe?email=${encodeURIComponent(email)}&sig=${sig}`;
+  const langParam = lang === "en" ? "&lang=en" : "";
+  return `${base}/unsubscribe?email=${encodeURIComponent(email)}&sig=${sig}${langParam}`;
 }
 
 async function sendBrevoEmail(env, { toEmail, toName, subject, html, unsubscribeUrl }) {
@@ -238,16 +265,21 @@ async function sendBrevoEmail(env, { toEmail, toName, subject, html, unsubscribe
 // La tabla se creó en la Iteración 1 sin day3_sent_at / day7_sent_at, y `CREATE TABLE IF NOT EXISTS`
 // no agrega columnas a una tabla que ya existe: sin esto, la secuencia fallaba con "no such column"
 // en cada corrida del cron, sin dejar rastro (los logs del Worker estaban desactivados).
+// `lang` llegó con la edición en inglés: los suscriptores anteriores quedan en NULL = español.
+// Se recuerda por instancia del Worker para no repetir el PRAGMA en cada suscripción.
+let columnsChecked = false;
 async function ensureFollowUpColumns(env) {
+  if (columnsChecked) return [];
   const info = await env.DB.prepare("PRAGMA table_info(subscribers)").all();
   const cols = new Set((info?.results || []).map((c) => c.name));
   const added = [];
-  for (const col of ["day3_sent_at", "day7_sent_at"]) {
+  for (const col of ["day3_sent_at", "day7_sent_at", "lang"]) {
     if (!cols.has(col)) {
       await env.DB.prepare(`ALTER TABLE subscribers ADD COLUMN ${col} TEXT`).run();
       added.push(col);
     }
   }
+  columnsChecked = true;
   return added;
 }
 
@@ -273,7 +305,7 @@ async function runFollowUpSequence(env, { dryRun = false } = {}) {
 
   const day3Due = await env.DB
     .prepare(
-      `SELECT id, email, name, chapter_selected FROM subscribers
+      `SELECT id, email, name, chapter_selected, lang FROM subscribers
        WHERE status = 'active'
          AND day3_sent_at IS NULL
          AND created_at <= datetime('now', '-3 days')
@@ -287,16 +319,17 @@ async function runFollowUpSequence(env, { dryRun = false } = {}) {
 
   for (const sub of day3Due?.results || []) {
     if (dryRun) {
-      results.preview.push(`day3:${maskEmail(sub.email)}`);
+      results.preview.push(`day3:${normLang(sub.lang)}:${maskEmail(sub.email)}`);
       continue;
     }
     try {
-      const unsubUrl = await unsubscribeUrlFor(env, sub.email);
-      const html = day3FollowUpHtml({ name: sub.name, chapterKey: sub.chapter_selected, unsubscribeUrl: unsubUrl });
+      const lang = normLang(sub.lang);
+      const unsubUrl = await unsubscribeUrlFor(env, sub.email, null, lang);
+      const html = day3FollowUpHtml({ name: sub.name, chapterKey: sub.chapter_selected, unsubscribeUrl: unsubUrl, lang });
       await sendBrevoEmail(env, {
         toEmail: sub.email,
         toName: sub.name,
-        subject: "¿Qué te pareció el capítulo? — Código Sintético",
+        subject: subjectFor("day3", lang),
         html,
         unsubscribeUrl: unsubUrl,
       });
@@ -312,7 +345,7 @@ async function runFollowUpSequence(env, { dryRun = false } = {}) {
 
   const day7Due = await env.DB
     .prepare(
-      `SELECT id, email, name FROM subscribers
+      `SELECT id, email, name, lang FROM subscribers
        WHERE status = 'active'
          AND day7_sent_at IS NULL
          AND created_at <= datetime('now', '-7 days')
@@ -329,16 +362,17 @@ async function runFollowUpSequence(env, { dryRun = false } = {}) {
 
   for (const sub of day7Due?.results || []) {
     if (dryRun) {
-      results.preview.push(`day7:${maskEmail(sub.email)}`);
+      results.preview.push(`day7:${normLang(sub.lang)}:${maskEmail(sub.email)}`);
       continue;
     }
     try {
-      const unsubUrl = await unsubscribeUrlFor(env, sub.email);
-      const html = day7FollowUpHtml({ name: sub.name, unsubscribeUrl: unsubUrl });
+      const lang = normLang(sub.lang);
+      const unsubUrl = await unsubscribeUrlFor(env, sub.email, null, lang);
+      const html = day7FollowUpHtml({ name: sub.name, unsubscribeUrl: unsubUrl, lang });
       await sendBrevoEmail(env, {
         toEmail: sub.email,
         toName: sub.name,
-        subject: "Código Sintético ya está disponible",
+        subject: subjectFor("day7", lang),
         html,
         unsubscribeUrl: unsubUrl,
       });
@@ -378,6 +412,8 @@ async function handleSubscribe(request, env) {
   }
 
   const { name, email, chapter, turnstileToken, website } = payload;
+  const lang = normLang(payload.lang);
+  const en = lang === "en";
 
   // Honeypot: campo "website" debe llegar vacío. Si un bot lo rellena, lo
   // dejamos "aceptar" en apariencia (para no delatar el honeypot) pero no
@@ -387,7 +423,7 @@ async function handleSubscribe(request, env) {
   }
 
   if (!email || !EMAIL_RE.test(email)) {
-    return json({ ok: false, error: "Correo inválido." }, 400, cors);
+    return json({ ok: false, error: en ? "Invalid email address." : "Correo inválido." }, 400, cors);
   }
 
   const chapterKey = CHAPTER_LABELS[chapter] ? chapter : "cap1";
@@ -395,8 +431,10 @@ async function handleSubscribe(request, env) {
   const ip = request.headers.get("CF-Connecting-IP");
   const turnstileOk = await verifyTurnstile(turnstileToken, env.TURNSTILE_SECRET_KEY, ip);
   if (!turnstileOk) {
-    return json({ ok: false, error: "Verificación anti-spam fallida." }, 403, cors);
+    return json({ ok: false, error: en ? "Anti-spam check failed." : "Verificación anti-spam fallida." }, 403, cors);
   }
+
+  await ensureFollowUpColumns(env); // garantiza la columna `lang` antes de escribir al suscriptor
 
   // Upsert del suscriptor. Si ya existe y sigue activo, no reenviamos correo
   // (evita que alguien reciba el mismo capítulo repetidamente).
@@ -411,26 +449,26 @@ async function handleSubscribe(request, env) {
 
   if (existing) {
     await env.DB
-      .prepare("UPDATE subscribers SET status = 'active', name = ?, chapter_selected = ? WHERE email = ?")
-      .bind(name || null, chapterKey, email)
+      .prepare("UPDATE subscribers SET status = 'active', name = ?, chapter_selected = ?, lang = ? WHERE email = ?")
+      .bind(name || null, chapterKey, lang, email)
       .run();
   } else {
     await env.DB
       .prepare(
-        "INSERT INTO subscribers (email, name, chapter_selected, status) VALUES (?, ?, ?, 'active')"
+        "INSERT INTO subscribers (email, name, chapter_selected, lang, status) VALUES (?, ?, ?, ?, 'active')"
       )
-      .bind(email, name || null, chapterKey)
+      .bind(email, name || null, chapterKey, lang)
       .run();
   }
 
   // Enlace de descarga: apunta al propio Worker (/download), firmado con
   // HMAC y con expiración de 7 días embebida — el PDF real vive en un
   // bucket R2 privado, nunca se expone directamente.
-  const downloadUrl = await buildDownloadUrl(request, env, chapterKey, email);
+  const downloadUrl = await buildDownloadUrl(request, env, chapterKey, email, lang);
 
-  const unsubscribeUrl = await unsubscribeUrlFor(env, email, new URL(request.url).origin);
+  const unsubscribeUrl = await unsubscribeUrlFor(env, email, new URL(request.url).origin, lang);
 
-  const html = chapterEmailHtml({ name, chapterKey, downloadUrl }).replace(
+  const html = chapterEmailHtml({ name, chapterKey, downloadUrl, lang }).replace(
     "{{unsubscribeUrl}}",
     unsubscribeUrl
   );
@@ -439,7 +477,7 @@ async function handleSubscribe(request, env) {
     await sendBrevoEmail(env, {
       toEmail: email,
       toName: name,
-      subject: `Tu capítulo de Código Sintético está listo`,
+      subject: subjectFor("chapter", lang),
       html,
       unsubscribeUrl,
     });
@@ -447,7 +485,8 @@ async function handleSubscribe(request, env) {
     // El registro en D1 ya quedó guardado; devolvemos el error real de Brevo (como la v3 del
     // dashboard) para poder diagnosticar la causa exacta, y queda también en los logs.
     console.error("subscribe: Brevo rechazó el envío", err.message || err);
-    return json({ ok: false, error: `No se pudo enviar el correo: ${err.message || err}` }, 502, cors);
+    const prefix = en ? "The email could not be sent" : "No se pudo enviar el correo";
+    return json({ ok: false, error: `${prefix}: ${err.message || err}` }, 502, cors);
   }
 
   await env.DB
@@ -464,14 +503,15 @@ async function handleUnsubscribe(request, env) {
   const url = new URL(request.url);
   const email = url.searchParams.get("email") || "";
   const sig = url.searchParams.get("sig") || "";
+  const en = url.searchParams.get("lang") === "en";
 
   if (!email || !sig) {
-    return new Response("Enlace inválido.", { status: 400 });
+    return new Response(en ? "Invalid link." : "Enlace inválido.", { status: 400 });
   }
 
   const expected = await hmacHex(env.UNSUB_SECRET, email);
   if (!safeEqual(expected, sig)) {
-    return new Response("Enlace inválido o alterado.", { status: 403 });
+    return new Response(en ? "Invalid or tampered link." : "Enlace inválido o alterado.", { status: 403 });
   }
 
   await env.DB
@@ -480,7 +520,7 @@ async function handleUnsubscribe(request, env) {
     .run();
 
   return new Response(
-    "Listo, te dimos de baja. Puedes cerrar esta pestaña.",
+    en ? "Done, you've been unsubscribed. You can close this tab." : "Listo, te dimos de baja. Puedes cerrar esta pestaña.",
     { status: 200, headers: { "Content-Type": "text/plain; charset=utf-8" } }
   );
 }

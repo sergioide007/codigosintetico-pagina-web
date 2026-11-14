@@ -13,7 +13,8 @@ CREATE TABLE IF NOT EXISTS subscribers (
   created_at        TEXT NOT NULL DEFAULT (datetime('now')),
   last_sent_at      TEXT,
   day3_sent_at      TEXT,   -- Iteración 2 (el Worker las agrega solo si faltan: ensureFollowUpColumns)
-  day7_sent_at      TEXT
+  day7_sent_at      TEXT,
+  lang              TEXT    -- es | en (NULL = es); el Worker la agrega sola si falta
 );
 
 CREATE INDEX IF NOT EXISTS idx_subscribers_status ON subscribers (status);

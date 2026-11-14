@@ -620,10 +620,15 @@
       </div>
 
       <div class="subscribe-row">
-        <select name="chapter" id="sub-chapter">
+        <select name="chapter" id="sub-chapter" aria-label="Capítulo">
           <option value="cap1">Capítulo 1 — El despertar agéntico</option>
           <option value="cap2">Capítulo 2 — El AI Engineer</option>
           <option value="cap3">Capítulo 3 — Platform Engineering en la era agéntica</option>
+        </select>
+        <!-- Idioma del capítulo y de los correos: "en" envía la edición en inglés (Synthetic Code). -->
+        <select name="lang" id="sub-lang" aria-label="Idioma del capítulo y de los correos / Chapter and email language">
+          <option value="es">Español</option>
+          <option value="en" lang="en">English</option>
         </select>
       </div>
 
