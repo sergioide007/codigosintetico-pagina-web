@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS subscribers (
   source            TEXT NOT NULL DEFAULT 'website',
   created_at        TEXT NOT NULL DEFAULT (datetime('now')),
   last_sent_at      TEXT,
-  day3_sent_at      TEXT,   -- Iteración 2: secuencia de seguimiento
+  day3_sent_at      TEXT,   -- Iteración 2 (el Worker las agrega solo si faltan: ensureFollowUpColumns)
   day7_sent_at      TEXT
 );
 

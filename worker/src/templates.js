@@ -183,20 +183,29 @@ function day7FollowUpHtml({ name, unsubscribeUrl }) {
           <p style="margin:0 0 16px;">
             "La ingeniería de software no desaparece con los agentes. Evoluciona."
             — es la premisa de <em>Código Sintético</em>, y la razón por la que te
-            suscribiste hace una semana.
+            suscribiste.
           </p>
           <p style="margin:0 0 16px; color:#c5c5cf;">
-            La edición completa (EPUB, PDF y tapa blanda) está en proceso de publicación
-            en Amazon, Google Play Books y Lulu. En cuanto esté disponible, tú lo sabrás
-            primero — sigues en la lista.
+            Te lo prometimos: lo sabes primero. La edición completa ya está disponible en
+            Amazon en <a href="https://www.amazon.com/dp/B0HG96Y1LN" style="color:#e8a33d; text-decoration:none;">Kindle</a>,
+            <a href="https://www.amazon.com/dp/B0HGFD1Y6G" style="color:#e8a33d; text-decoration:none;">tapa blanda</a> y
+            <a href="https://www.amazon.com/dp/B0HGGH9P77" style="color:#e8a33d; text-decoration:none;">tapa dura</a>.
+          </p>
+          <p style="margin:0 0 16px; color:#c5c5cf;">
+            ¿Lees en inglés? También está la edición en inglés, <em>Synthetic Code</em>,
+            actualizada con los modelos de noviembre de 2026:
+            <a href="https://www.amazon.com/dp/B0HRMZ15PV" style="color:#e8a33d; text-decoration:none;">verla en Amazon</a>.
           </p>
         </td></tr>
         <tr><td style="padding:8px 32px 24px; text-align:center;">
-          <a href="https://codigosintetico.specsolid.com/"
+          <a href="https://codigosintetico.specsolid.com/#comprar"
              style="display:inline-block; background-color:#e8a33d; color:#15151d; text-decoration:none;
                     font-weight:700; font-size:15px; padding:14px 28px; border-radius:8px;">
-            Volver al sitio del libro
+            Ver todas las tiendas
           </a>
+          <p style="margin:14px 0 0; font-size:12px; color:#8a8a96;">
+            Amazon, Lulu, Apple Books, Kobo, Gumroad (PDF) y más.
+          </p>
         </td></tr>
         <tr><td style="padding:20px 32px; border-top:1px solid #2a2a35; text-align:center;">
           <p style="margin:0 0 6px; font-size:13px; color:#8a8a96;">Sergio Perez Ruiz — SpecSolid Press</p>

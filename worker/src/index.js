@@ -90,7 +90,7 @@ async function handleDownload(request, env) {
   }
 
   const expected = await hmacHex(env.DOWNLOAD_SECRET, `${chapterKey}:${email}:${exp}`);
-  if (expected !== sig) {
+  if (!safeEqual(expected, sig)) {
     return new Response("Enlace inválido o alterado.", { status: 403 });
   }
 
@@ -113,7 +113,7 @@ async function handleDownload(request, env) {
 // ADMIN_KEY. No expone la lista de correos, solo conteos agregados.
 async function handleAdminStats(request, env) {
   const key = request.headers.get("X-Admin-Key") || "";
-  if (!env.ADMIN_KEY || key !== env.ADMIN_KEY) {
+  if (!env.ADMIN_KEY || !safeEqual(key, env.ADMIN_KEY)) {
     return json({ ok: false, error: "No autorizado." }, 401, {
       "Access-Control-Allow-Origin": "*",
     });
@@ -182,7 +182,44 @@ async function handleAdminStats(request, env) {
   );
 }
 
-async function sendBrevoEmail(env, { toEmail, toName, subject, html }) {
+// Fallback del origin del Worker para los enlaces de baja que arma el cron (ahí no hay `request`).
+// Si WORKER_ORIGIN no está configurada, antes el enlace salía relativo ("/unsubscribe?...") y no servía.
+const DEFAULT_WORKER_ORIGIN = "https://specsolid-newsletter.sergioide007.workers.dev";
+
+// Brevo gratis = 300 correos/día. Cada corrida del cron envía como máximo esto, para dejar margen
+// a los correos de suscripción del día; lo que quede pendiente sale en la corrida siguiente.
+const MAX_FOLLOWUPS_PER_RUN = 150;
+
+// Comparación en tiempo constante para firmas HMAC (evita filtrar la firma por tiempos de respuesta).
+function safeEqual(a, b) {
+  a = String(a || "");
+  b = String(b || "");
+  if (a.length !== b.length) return false;
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return diff === 0;
+}
+
+async function unsubscribeUrlFor(env, email, origin) {
+  const sig = await hmacHex(env.UNSUB_SECRET, email);
+  const base = origin || env.WORKER_ORIGIN || DEFAULT_WORKER_ORIGIN;
+  return `${base}/unsubscribe?email=${encodeURIComponent(email)}&sig=${sig}`;
+}
+
+async function sendBrevoEmail(env, { toEmail, toName, subject, html, unsubscribeUrl }) {
+  const payload = {
+    sender: { name: env.SENDER_NAME, email: env.SENDER_EMAIL },
+    to: [{ email: toEmail, name: toName || undefined }],
+    subject,
+    htmlContent: html,
+  };
+  if (unsubscribeUrl) {
+    // Baja en un clic (Gmail/Yahoo la exigen a remitentes masivos y mejora la entregabilidad).
+    payload.headers = {
+      "List-Unsubscribe": `<${unsubscribeUrl}>`,
+      "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+    };
+  }
   const res = await fetch("https://api.brevo.com/v3/smtp/email", {
     method: "POST",
     headers: {
@@ -190,12 +227,7 @@ async function sendBrevoEmail(env, { toEmail, toName, subject, html }) {
       Accept: "application/json",
       "api-key": env.BREVO_API_KEY,
     },
-    body: JSON.stringify({
-      sender: { name: env.SENDER_NAME, email: env.SENDER_EMAIL },
-      to: [{ email: toEmail, name: toName || undefined }],
-      subject,
-      htmlContent: html,
-    }),
+    body: JSON.stringify(payload),
   });
   if (!res.ok) {
     const errText = await res.text();
@@ -203,87 +235,135 @@ async function sendBrevoEmail(env, { toEmail, toName, subject, html }) {
   }
 }
 
+// La tabla se creó en la Iteración 1 sin day3_sent_at / day7_sent_at, y `CREATE TABLE IF NOT EXISTS`
+// no agrega columnas a una tabla que ya existe: sin esto, la secuencia fallaba con "no such column"
+// en cada corrida del cron, sin dejar rastro (los logs del Worker estaban desactivados).
+async function ensureFollowUpColumns(env) {
+  const info = await env.DB.prepare("PRAGMA table_info(subscribers)").all();
+  const cols = new Set((info?.results || []).map((c) => c.name));
+  const added = [];
+  for (const col of ["day3_sent_at", "day7_sent_at"]) {
+    if (!cols.has(col)) {
+      await env.DB.prepare(`ALTER TABLE subscribers ADD COLUMN ${col} TEXT`).run();
+      added.push(col);
+    }
+  }
+  return added;
+}
+
+function maskEmail(email) {
+  const [user, domain] = String(email).split("@");
+  return `${(user || "").slice(0, 2)}***@${domain || ""}`;
+}
+
 // ── Iteración 2: secuencia de seguimiento (día 3 / día 7) ───────────────
-// Se dispara desde el Cron Trigger configurado en wrangler.toml. Cada
-// corrida busca suscriptores activos a los que ya les toca el correo de
-// día 3 o día 7 (según `created_at`) y que todavía no lo recibieron, y
-// marca la columna correspondiente para no duplicar envíos.
-async function runFollowUpSequence(env) {
-  const results = { day3Sent: 0, day7Sent: 0, errors: [] };
+// La dispara el Cron Trigger (wrangler.toml → [triggers], o Settings → Trigger events en el
+// dashboard). Reglas:
+//  - Día 3 ("¿qué te pareció?"): solo a quien se suscribió hace entre 3 y 10 días. A alguien de
+//    hace dos meses ya no tiene sentido preguntarle por el capítulo.
+//  - Día 7 ("el libro ya está disponible"): a quien se suscribió hace 7+ días y ya recibió el de
+//    día 3 hace al menos 3 días, o a quien se suscribió hace más de 10 días y nunca recibió el de
+//    día 3 (la lista acumulada mientras el cron no corría recibe UN solo correo, el del lanzamiento).
+//  - Como máximo MAX_FOLLOWUPS_PER_RUN envíos por corrida; el resto sale al día siguiente.
+//  - dryRun: no envía ni marca nada; devuelve a quién se le enviaría (correos enmascarados).
+async function runFollowUpSequence(env, { dryRun = false } = {}) {
+  const results = { dryRun, columnsAdded: [], day3Sent: 0, day7Sent: 0, day3Due: 0, day7Due: 0, preview: [], errors: [] };
+  results.columnsAdded = await ensureFollowUpColumns(env);
+  let budget = MAX_FOLLOWUPS_PER_RUN;
 
   const day3Due = await env.DB
     .prepare(
       `SELECT id, email, name, chapter_selected FROM subscribers
        WHERE status = 'active'
          AND day3_sent_at IS NULL
-         AND created_at <= datetime('now', '-3 days')`
+         AND created_at <= datetime('now', '-3 days')
+         AND created_at >= datetime('now', '-10 days')
+       ORDER BY created_at
+       LIMIT ?`
     )
+    .bind(budget)
     .all();
+  results.day3Due = (day3Due?.results || []).length;
 
   for (const sub of day3Due?.results || []) {
+    if (dryRun) {
+      results.preview.push(`day3:${maskEmail(sub.email)}`);
+      continue;
+    }
     try {
-      const unsubSig = await hmacHex(env.UNSUB_SECRET, sub.email);
-      const workerOrigin = env.WORKER_ORIGIN || "";
-      const unsubUrl = `${workerOrigin}/unsubscribe?email=${encodeURIComponent(sub.email)}&sig=${unsubSig}`;
-
-      const html = day3FollowUpHtml({
-        name: sub.name,
-        chapterKey: sub.chapter_selected,
-        unsubscribeUrl: unsubUrl,
-      });
-
+      const unsubUrl = await unsubscribeUrlFor(env, sub.email);
+      const html = day3FollowUpHtml({ name: sub.name, chapterKey: sub.chapter_selected, unsubscribeUrl: unsubUrl });
       await sendBrevoEmail(env, {
         toEmail: sub.email,
         toName: sub.name,
         subject: "¿Qué te pareció el capítulo? — Código Sintético",
         html,
+        unsubscribeUrl: unsubUrl,
       });
-
-      await env.DB
-        .prepare("UPDATE subscribers SET day3_sent_at = datetime('now') WHERE id = ?")
-        .bind(sub.id)
-        .run();
+      await env.DB.prepare("UPDATE subscribers SET day3_sent_at = datetime('now') WHERE id = ?").bind(sub.id).run();
       results.day3Sent++;
+      budget--;
     } catch (err) {
-      results.errors.push(`day3:${sub.email}:${err.message || err}`);
+      results.errors.push(`day3:${maskEmail(sub.email)}:${err.message || err}`);
     }
   }
+
+  if (budget <= 0) return results;
 
   const day7Due = await env.DB
     .prepare(
       `SELECT id, email, name FROM subscribers
        WHERE status = 'active'
          AND day7_sent_at IS NULL
-         AND created_at <= datetime('now', '-7 days')`
+         AND created_at <= datetime('now', '-7 days')
+         AND (
+           (day3_sent_at IS NOT NULL AND day3_sent_at <= datetime('now', '-3 days'))
+           OR (day3_sent_at IS NULL AND created_at < datetime('now', '-10 days'))
+         )
+       ORDER BY created_at
+       LIMIT ?`
     )
+    .bind(budget)
     .all();
+  results.day7Due = (day7Due?.results || []).length;
 
   for (const sub of day7Due?.results || []) {
+    if (dryRun) {
+      results.preview.push(`day7:${maskEmail(sub.email)}`);
+      continue;
+    }
     try {
-      const unsubSig = await hmacHex(env.UNSUB_SECRET, sub.email);
-      const workerOrigin = env.WORKER_ORIGIN || "";
-      const unsubUrl = `${workerOrigin}/unsubscribe?email=${encodeURIComponent(sub.email)}&sig=${unsubSig}`;
-
+      const unsubUrl = await unsubscribeUrlFor(env, sub.email);
       const html = day7FollowUpHtml({ name: sub.name, unsubscribeUrl: unsubUrl });
-
       await sendBrevoEmail(env, {
         toEmail: sub.email,
         toName: sub.name,
-        subject: "Antes de que se te pase — Código Sintético",
+        subject: "Código Sintético ya está disponible",
         html,
+        unsubscribeUrl: unsubUrl,
       });
-
-      await env.DB
-        .prepare("UPDATE subscribers SET day7_sent_at = datetime('now') WHERE id = ?")
-        .bind(sub.id)
-        .run();
+      await env.DB.prepare("UPDATE subscribers SET day7_sent_at = datetime('now') WHERE id = ?").bind(sub.id).run();
       results.day7Sent++;
     } catch (err) {
-      results.errors.push(`day7:${sub.email}:${err.message || err}`);
+      results.errors.push(`day7:${maskEmail(sub.email)}:${err.message || err}`);
     }
   }
 
   return results;
+}
+
+// POST /admin/run-followups  (header X-Admin-Key)
+//   ?dry=1 (por defecto): solo muestra a quién se le enviaría.   ?dry=0: envía de verdad.
+// Sirve para probar la secuencia sin esperar al cron.
+async function handleAdminRunFollowUps(request, env) {
+  const cors = { "Access-Control-Allow-Origin": "*" };
+  const key = request.headers.get("X-Admin-Key") || "";
+  if (!env.ADMIN_KEY || !safeEqual(key, env.ADMIN_KEY)) {
+    return json({ ok: false, error: "No autorizado." }, 401, cors);
+  }
+  const dryRun = new URL(request.url).searchParams.get("dry") !== "0";
+  const results = await runFollowUpSequence(env, { dryRun });
+  return json({ ok: true, ...results }, 200, cors);
 }
 
 async function handleSubscribe(request, env) {
@@ -348,8 +428,7 @@ async function handleSubscribe(request, env) {
   // bucket R2 privado, nunca se expone directamente.
   const downloadUrl = await buildDownloadUrl(request, env, chapterKey, email);
 
-  const unsubSig = await hmacHex(env.UNSUB_SECRET, email);
-  const unsubscribeUrl = `${new URL(request.url).origin}/unsubscribe?email=${encodeURIComponent(email)}&sig=${unsubSig}`;
+  const unsubscribeUrl = await unsubscribeUrlFor(env, email, new URL(request.url).origin);
 
   const html = chapterEmailHtml({ name, chapterKey, downloadUrl }).replace(
     "{{unsubscribeUrl}}",
@@ -362,11 +441,13 @@ async function handleSubscribe(request, env) {
       toName: name,
       subject: `Tu capítulo de Código Sintético está listo`,
       html,
+      unsubscribeUrl,
     });
   } catch (err) {
-    // El registro en D1 ya quedó guardado; devolvemos error para que el
-    // front-end pueda avisar, pero no perdemos al suscriptor.
-    return json({ ok: false, error: "No se pudo enviar el correo. Intenta de nuevo en unos minutos." }, 502, cors);
+    // El registro en D1 ya quedó guardado; devolvemos el error real de Brevo (como la v3 del
+    // dashboard) para poder diagnosticar la causa exacta, y queda también en los logs.
+    console.error("subscribe: Brevo rechazó el envío", err.message || err);
+    return json({ ok: false, error: `No se pudo enviar el correo: ${err.message || err}` }, 502, cors);
   }
 
   await env.DB
@@ -377,6 +458,8 @@ async function handleSubscribe(request, env) {
   return json({ ok: true }, 200, cors);
 }
 
+// GET: el enlace "Darme de baja" del correo.  POST: baja en un clic desde Gmail/Yahoo
+// (cabecera List-Unsubscribe-Post), con los mismos parámetros firmados en la URL.
 async function handleUnsubscribe(request, env) {
   const url = new URL(request.url);
   const email = url.searchParams.get("email") || "";
@@ -387,7 +470,7 @@ async function handleUnsubscribe(request, env) {
   }
 
   const expected = await hmacHex(env.UNSUB_SECRET, email);
-  if (expected !== sig) {
+  if (!safeEqual(expected, sig)) {
     return new Response("Enlace inválido o alterado.", { status: 403 });
   }
 
@@ -464,7 +547,11 @@ export default {
         return await handleAdminStats(request, env);
       }
 
-      if (url.pathname === "/unsubscribe" && request.method === "GET") {
+      if (url.pathname === "/admin/run-followups" && request.method === "POST") {
+        return await handleAdminRunFollowUps(request, env);
+      }
+
+      if (url.pathname === "/unsubscribe" && (request.method === "GET" || request.method === "POST")) {
         return await handleUnsubscribe(request, env);
       }
 
@@ -484,8 +571,18 @@ export default {
 
   // Cron Trigger (ver [triggers] en wrangler.toml) — corre la secuencia de
   // seguimiento de día 3 / día 7. No hace nada si no hay suscriptores que
-  // les toque un correo todavía.
+  // les toque un correo todavía. El resultado (o el error) queda en Workers Logs:
+  // antes un fallo aquí era invisible.
   async scheduled(controller, env, ctx) {
-    ctx.waitUntil(runFollowUpSequence(env));
+    const missing = missingEnvVars(env).filter((k) => k !== "TURNSTILE_SECRET_KEY" && k !== "DOWNLOAD_SECRET");
+    if (missing.length > 0) {
+      console.error(`followups: falta configurar ${missing.join(", ")}`);
+      return;
+    }
+    ctx.waitUntil(
+      runFollowUpSequence(env)
+        .then((r) => console.log("followups", JSON.stringify(r)))
+        .catch((err) => console.error("followups: falló la corrida", err && (err.stack || err.message || err)))
+    );
   },
 };

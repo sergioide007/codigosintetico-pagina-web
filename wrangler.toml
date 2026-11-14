@@ -16,6 +16,10 @@ WORKER_ORIGIN = "https://specsolid-newsletter.sergioide007.workers.dev"
 [triggers]
 crons = ["0 14 * * *"]
 
+# Workers Logs: deja en la pestaña Observability el resultado (o el error) de cada corrida del cron.
+[observability]
+enabled = true
+
 [[d1_databases]]
 binding = "DB"
 database_name = "specsolid-newsletter-db"
