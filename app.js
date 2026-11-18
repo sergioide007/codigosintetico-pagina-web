@@ -133,6 +133,35 @@ function initSubscribeForm() {
   });
 }
 
+function initVideoPlayOverlay() {
+  const video = document.getElementById('promo-video');
+  const overlay = document.getElementById('video-play-overlay');
+  const wrap = video && video.closest('.video-wrap');
+  if (!video || !overlay || !wrap) return;
+
+  function markPlaying() {
+    wrap.classList.add('playing');
+  }
+  function markPaused() {
+    wrap.classList.remove('playing');
+  }
+
+  // Click on overlay or video-wrap starts play
+  wrap.addEventListener('click', (e) => {
+    if (video.paused) {
+      video.play().catch(() => {});
+    }
+  });
+
+  video.addEventListener('play', markPlaying);
+  video.addEventListener('playing', markPlaying);
+  video.addEventListener('pause', markPaused);
+  video.addEventListener('ended', markPaused);
+
+  // Prevent double-click on video controls from toggling overlay
+  video.addEventListener('click', (e) => e.stopPropagation());
+}
+
 function initVideoShare() {
   const shareBtn = document.getElementById('btn-share-video');
   const downloadBtn = document.getElementById('btn-download-video');
@@ -195,6 +224,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initMobileMenu();
   initScrollReveal();
   initSubscribeForm();
+  initVideoPlayOverlay();
   initVideoShare();
   initInfografias();
 });

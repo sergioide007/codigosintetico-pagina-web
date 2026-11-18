@@ -795,41 +795,70 @@
 <section class="video-section" id="video">
   <div class="container">
     <div class="section-header center reveal">
-      <h2 class="section-title">Ayúdanos a correr la voz</h2>
-      <p class="section-sub">Un video corto y vertical, listo para compartir tal cual en tus redes. Cada persona que lo comparta le da una oportunidad más al libro.</p>
+      <div class="eyebrow">
+        <span class="video-new-badge">Nuevo tráiler</span>
+      </div>
+      <h2 class="section-title">Córrela la voz</h2>
+      <p class="section-sub">60 segundos que explican por qué este libro importa. Compártelo tal cual — cada persona que lo ve es un lector potencial.</p>
     </div>
 
-    <div class="video-wrap reveal reveal-1">
-      <video
-        id="promo-video"
-        controls
-        playsinline
-        preload="metadata"
-        poster="video-poster.jpg"
-        width="1080" height="1920">
-        <source src="codigo-sintetico-trailer.mp4" type="video/mp4">
-        Tu navegador no soporta video HTML5. <a href="codigo-sintetico-trailer.mp4">Descárgalo aquí</a>.
-      </video>
+    <div class="video-phone-frame reveal reveal-1">
+      <div class="video-phone-notch"></div>
+      <div class="video-wrap">
+        <video
+          id="promo-video"
+          controls
+          playsinline
+          preload="metadata"
+          poster="video-poster.jpg"
+          width="1080" height="1920">
+          <source src="codigo-sintetico-trailer.mp4" type="video/mp4">
+          Tu navegador no soporta video HTML5. <a href="codigo-sintetico-trailer.mp4">Descárgalo aquí</a>.
+        </video>
+        <div class="video-play-overlay" id="video-play-overlay" aria-hidden="true">
+          <div class="video-play-btn">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M8 5.14v14l11-7-11-7z"/>
+            </svg>
+          </div>
+          <div class="video-play-label">Ver tráiler</div>
+        </div>
+      </div>
+      <div class="video-phone-chin"></div>
     </div>
 
     <div class="video-actions reveal reveal-2">
-      <button id="btn-share-video" class="btn btn-gold" style="display:none">Compartir ahora →</button>
-      <a href="codigo-sintetico-trailer.mp4" download="codigo-sintetico-trailer.mp4" class="btn btn-outline" id="btn-download-video">Descargar video (MP4, vertical)</a>
+      <button id="btn-share-video" class="btn btn-gold video-share-btn" style="display:none">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        Compartir ahora
+      </button>
+      <a href="codigo-sintetico-trailer.mp4" download="codigo-sintetico-trailer.mp4" class="btn btn-outline video-download-btn" id="btn-download-video">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Descargar MP4 · vertical
+      </a>
     </div>
 
     <p class="video-hint" id="video-hint">
-      En el celular, "Compartir" abre el menú nativo para mandarlo directo a TikTok, Instagram, WhatsApp, Telegram, X o donde prefieras. En computadora, descárgalo y súbelo manualmente.
+      En el celular, <strong>Compartir</strong> abre el menú nativo — mándalo directo a TikTok, Instagram, WhatsApp o donde prefieras. En computadora, descárgalo y súbelo manualmente.
     </p>
 
     <div class="video-platforms reveal reveal-3">
-      <span class="video-platform-tag">TikTok</span>
-      <span class="video-platform-tag">Instagram Reels</span>
-      <span class="video-platform-tag">YouTube Shorts</span>
+      <span class="video-platform-tag">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.19 8.19 0 0 0 4.79 1.53V6.77a4.85 4.85 0 0 1-1.02-.08z"/></svg>
+        TikTok
+      </span>
+      <span class="video-platform-tag">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" fill="var(--bg-primary)"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5" stroke="var(--bg-primary)" stroke-width="2"/></svg>
+        Instagram Reels
+      </span>
+      <span class="video-platform-tag">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+        YouTube Shorts
+      </span>
       <span class="video-platform-tag">LinkedIn</span>
       <span class="video-platform-tag">WhatsApp</span>
       <span class="video-platform-tag">X / Twitter</span>
       <span class="video-platform-tag">Telegram</span>
-      <span class="video-platform-tag">Twitch</span>
     </div>
   </div>
 </section>
