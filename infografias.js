@@ -46,21 +46,18 @@ function renderInfografiasCards() {
   if (!grid) return;
 
   grid.innerHTML = INFOGRAFIAS.map((item, i) => `
-    <article class="info-card" id="infografia-${item.slug}" data-index="${i}" data-badge="${item.badge}">
-      <button type="button" class="info-card-img-btn" data-open-lightbox="${i}" aria-label="Ver ${item.title} en tamaño completo">
-        <img src="${INFO_IMG_THUMB(item.slug)}" alt="Infografía: ${item.title} — Código Sintético" loading="lazy" width="520" height="924">
+    <article class="info-card" id="infografia-${item.slug}" data-index="${i}" data-badge="${item.badge}" title="${item.title}">
+      <button type="button" class="info-card-img-btn" data-open-lightbox="${i}" aria-label="Ver: ${item.title}">
+        <img src="${INFO_IMG_THUMB(item.slug)}" alt="${item.title} — Código Sintético" loading="lazy" width="520" height="924">
         <div class="info-card-img-overlay" aria-hidden="true">
           <span class="info-card-zoom-hint">${SVG_ZOOM} Ver completa</span>
         </div>
       </button>
       <div class="info-card-body">
-        <span class="info-badge">${item.badge}</span>
-        <h3 class="info-card-title">${item.title}</h3>
-        <p class="info-card-blurb">${item.blurb}</p>
-        <div class="info-card-actions">
-          <button type="button" class="info-btn" data-open-lightbox="${i}">${SVG_EYE} Ver</button>
-          <button type="button" class="info-btn share" data-share="${i}">${SVG_SHARE}</button>
-        </div>
+        <span class="info-badge" title="${item.title}">${item.badge}</span>
+        <button type="button" class="info-btn share" data-share="${i}" aria-label="Compartir: ${item.title}" title="Compartir esta infografía">
+          ${SVG_SHARE}
+        </button>
       </div>
     </article>
   `).join('');
@@ -71,12 +68,12 @@ function renderInfografiasCards() {
     entries.forEach((entry) => {
       if (entry.isIntersecting) {
         const card  = entry.target;
-        const delay = (Number(card.dataset.index) % 6) * 60;
+        const delay = (Number(card.dataset.index) % 8) * 50;
         setTimeout(() => card.classList.add('visible'), delay);
         obs.unobserve(card);
       }
     });
-  }, { threshold: 0.08 });
+  }, { threshold: 0.05 });
   cards.forEach((c) => obs.observe(c));
 }
 
